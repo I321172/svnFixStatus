@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Check SVN Revision Fix Status</title>
+<style>
+table {
+	text-align: left;
+}
+
+td {
+	padding: 0px 50px 0px 0px;
+}
+
+p.bg {
+	background-color: #a4c2f4;
+}
+
+table.Fixed {
+	background-color: green;
+}
+
+table.NotFixed {
+	background-color: red;
+}
+
+table.NONE {
+	background-color: yellow;
+}
+</style>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<h1 th:text="'Result for SVN Fix Revision: '+${svnInfo.revision}">Result
+		for SVN fix revision: 839884</h1>
+	<hr />
+	<table id="basic" border="1">
+		<tr>
+			<th>Check In Revision:</th>
+			<td th:text="${svnInfo.revision}">839884</td>
+			<th>Author:</th>
+			<td th:text="${svnInfo.author}">I319106</td>
+			<th>Check In Date:</th>
+			<td th:text="${svnInfo.createDate}">Thu Sep 17 17:07:25 CST 2015</td>
+		</tr>
+		<tr>
+			<th>Check In Comment:</th>
+			<td colspan="5" th:text="${svnInfo.comment}">fix issue missing
+				Missing LocalizedLabelParameter set.</td>
+		</tr>
+	</table>
+
+	<p class="bg">Check In Details</p>
+	<table th:each="comp:${svnInfo.svnEnvComparison}">
+		<tr>
+			<td>
+				<table border="1">
+					<tr>
+						<th>Full Path:</th>
+						<td colspan="3" th:text="${comp.path}" width="800">Here is
+							the Full path of the modified File in SVN revision</td>
+					</tr>
+					<tr>
+						<th>Module:</th>
+						<td th:text="${comp.feature}">Feature Name</td>
+						<th>SVN Revision:</th>
+						<td th:text="${svnInfo.revision}">839884</td>
+					</tr>
+					<tr th:each="envInfo:${comp.envInfo}">
+						<td colspan="4">
+							<table th:class="${envInfo.fixStatus}">
+								<tr>
+									<th colspan="5" th:text="'Environment: '+${envInfo.env}">Environment:
+										qaautocand</th>
+								</tr>
+								<tr>
+									<th>Env Revision</th>
+									<td th:text="${envInfo.envRevision}">842152</td>
+									<th>Fix Status</th>
+									<td th:text="${envInfo.fixStatus}">Already Fixed</td>
+									<td><a target="_blank"
+										href="https://qaautocand.sflab.ondemand.com/sf-version.properties"
+										th:href="${envInfo.env.toVersionUrl()}">More Details about
+											the Environment</a></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+
+</body>
+</html>
