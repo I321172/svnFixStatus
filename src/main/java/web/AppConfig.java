@@ -37,6 +37,8 @@ public class AppConfig
         }
         return null;
     }
+    
+    //cannot have two DataSource instance
 
     // @Bean(name = "mysqlSource")
     // public DataSource getMysqlSource(@Value("${mysql.host}") String host,

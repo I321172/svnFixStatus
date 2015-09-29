@@ -1,15 +1,11 @@
 package web;
 
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.tmatesoft.svn.core.SVNException;
@@ -87,8 +83,6 @@ public class SVNUtils
         }
         log("SVN action takes " + getDuration(start));
 
-        fetchEnvVersionInfo();
-
         handleSvnEnvComparison(svnInfoBean);
 
         return svnInfoBean;
@@ -118,14 +112,6 @@ public class SVNUtils
         }
     }
 
-    private void fetchEnvVersionInfo() throws Exception
-    {
-        for (EnvEnum elem : EnvEnum.values())
-        {
-            elem.setVersionInfo(getSFVersion(elem.toVersionUrl(), elem.isNeedProxy()));
-        }
-    }
-
     /**
      * @param feature
      *            Jar file name in sf-version.properties
@@ -136,27 +122,6 @@ public class SVNUtils
     {
         String pattern = "(?<=" + feature + "\\.scm\\.version\\=).*\\d";
         return getMatchString(source, pattern);
-    }
-
-    private String getSFVersion(String queryUrl, boolean isProxy) throws Exception
-    {
-        long start = getTime();
-        logger.info("Fetch info in " + queryUrl);
-        HttpClient httpClient = new HttpClient();
-        if (isProxy)
-        {
-            String proxyHost = "proxy";
-            String proxyPort = "8080";
-
-            int proxyPortInt = Integer.valueOf(proxyPort);
-            httpClient.getHostConfiguration().setProxy(proxyHost, proxyPortInt);
-        }
-        GetMethod request = new GetMethod(queryUrl);
-        httpClient.executeMethod(request);
-
-        InputStream stream = request.getResponseBodyAsStream();
-        log("HttpClient action takes " + getDuration(start));
-        return IOUtils.toString(stream, "UTF-8");
     }
 
     private void log(String msg)
