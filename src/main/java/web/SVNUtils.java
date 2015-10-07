@@ -7,7 +7,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
@@ -27,13 +26,10 @@ import bean.SvnInfoBean;
 @Repository
 public class SVNUtils
 {
-    private Logger        logger = Logger.getLogger(getClass());
-    @Value("${svn.url}")
-    private String        svnUrl /* = "https://svn.successfactors.com/repos/" */;
-    @Value("${svn.user}")
-    private String        svnUser /* = "lguan" */;
-    @Value("${svn.pwd}")
-    private String        svnPwd /* = "TLrVfAQ" */;
+    private Logger        logger  = Logger.getLogger(getClass());
+    private String        svnUrl  = "https://svn.successfactors.com/repos/";
+    private String        svnUser = "lguan";
+    private String        svnPwd  = "TLrVfAQ";
     private SVNRepository repository;
 
     public SVNUtils()
@@ -45,7 +41,7 @@ public class SVNUtils
         } catch (SVNException e)
         {
             // TODO Auto-generated catch block
-            logger.error(e.getMessage());
+            logger.error("Fatal ERROR! " + e.getMessage());
         }
         @SuppressWarnings("deprecation")
         /* "adamzhang", "cMpgSrdj" */
@@ -61,7 +57,6 @@ public class SVNUtils
     public SvnInfoBean checkFixCodeInLatestBuildVersion(long checkInVersion) throws Exception
     {
         SvnInfoBean svnInfoBean = new SvnInfoBean();
-        long start = getTime();
         log("Start to fetch SVN info for version:" + checkInVersion);
         @SuppressWarnings("unchecked")
         Collection<SVNLogEntry> logEntries = repository.log(new String[] { "" }, null, checkInVersion, checkInVersion,
@@ -88,7 +83,6 @@ public class SVNUtils
                 }
             }
         }
-        log("SVN action takes " + getDuration(start));
 
         handleSvnEnvComparison(svnInfoBean);
 
@@ -137,17 +131,6 @@ public class SVNUtils
         logger.info(msg);
     }
 
-    private long getTime()
-    {
-        return System.currentTimeMillis();
-    }
-
-    private String getDuration(long start)
-    {
-        long dur = (getTime() - start) / 1000;
-        return dur + " seconds";
-    }
-
     private String getMatchString(String source, String pattern)
     {
         Pattern pat = Pattern.compile(pattern);
@@ -159,6 +142,36 @@ public class SVNUtils
         }
 
         return null;
+    }
+
+    public void setSvnUrl(String svnUrl)
+    {
+        this.svnUrl = svnUrl;
+    }
+
+    public void setSvnUser(String svnUser)
+    {
+        this.svnUser = svnUser;
+    }
+
+    public void setSvnPwd(String svnPwd)
+    {
+        this.svnPwd = svnPwd;
+    }
+
+    public String getSvnUrl()
+    {
+        return svnUrl;
+    }
+
+    public String getSvnUser()
+    {
+        return svnUser;
+    }
+
+    public String getSvnPwd()
+    {
+        return svnPwd;
     }
 
     // public static void main(String args[]) throws Exception

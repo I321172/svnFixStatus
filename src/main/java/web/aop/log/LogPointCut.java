@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class LogPointCut
 {
-    
-    @Pointcut("execution(public web.SVNUtil.check*(..))" )
-    public void logSvnAction() { }
+    @Pointcut(value = "execution(* web.SVNUtils.check*(..))")
+    public void logSvnAction()
+    {}
 
 }

@@ -42,35 +42,26 @@ public class RequestController
         SVNUtils svnUtil = Application.context.getBean(SVNUtils.class);
         long version = getCheckInVersion(checkInVersion);
 
-        // CacheData cache = Application.context.getBean("cacheData",
-        // CacheData.class);
-        // SvnInfoBean svnInfo = cache.getStoredSvnInfo(version);
-        // if (svnInfo == null)
-        // {
-        // try
-        // {
-        // svnInfo = svnUtil.checkFixCodeInLatestBuildVersion(version);
-        // svnInfo.verifyValuable();
-        // if (svnInfo.isValuable())
-        // {
-        // cache.putStoredRevision(version, svnInfo);
-        // }
-        // } catch (Exception e)
-        // {
-        // log("SVN fetch version failed by " + e.getMessage());
-        // }
-        // } else
-        // {
-        // log("Get cached SVN Info; Revision: " + version);
-        // }
-        SvnInfoBean svnInfo = null;
-        try
+        CacheData cache = Application.context.getBean("cacheData", CacheData.class);
+        SvnInfoBean svnInfo = cache.getStoredSvnInfo(version);
+        if (svnInfo == null)
         {
-            svnInfo = svnUtil.checkFixCodeInLatestBuildVersion(version);
-            svnInfo.verifyValuable();
-        } catch (Exception e)
+            try
+            {
+                svnInfo = svnUtil.checkFixCodeInLatestBuildVersion(version);
+                svnInfo.verifyValuable();
+                if (svnInfo.isValuable())
+                {
+                    cache.putStoredRevision(version, svnInfo);
+                }
+            } catch (Exception e)
+            {
+                log("SVN fetch version failed by " + e.getMessage());
+            }
+        } else
         {
-            log("SVN fetch version failed by " + e.getMessage());
+            svnUtil.handleSvnEnvComparison(svnInfo);
+            log("Get cached SVN Info; Revision: " + version);
         }
 
         model.addAttribute("svnInfo", svnInfo);

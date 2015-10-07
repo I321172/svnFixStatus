@@ -13,11 +13,12 @@ public class LogAdvice
     private Logger logger = Logger.getLogger(getClass());
 
     @Around("web.aop.log.LogPointCut.logSvnAction()")
-    public void logSvnAction(ProceedingJoinPoint pjp) throws Throwable
+    public Object logSvnAction(ProceedingJoinPoint pjp) throws Throwable
     {
         long start = getTime();
-        pjp.proceed();
+        Object result = pjp.proceed();
         log("SVN action takes " + getDuration(start));
+        return result;
     }
 
     private long getTime()
