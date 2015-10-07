@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-public class Application
+public class Application 
 {
     public static ApplicationContext context;
 
@@ -18,5 +18,7 @@ public class Application
         CacheData cache = context.getBean("cacheData", CacheData.class);
         cache.setAllFeatures(dbUtil.getAllFeature());
     }
+
+
 
 }

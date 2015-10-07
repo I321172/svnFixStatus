@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<title>Getting Started: Handling Form Submission</title>
+<title>Refresh Schedule Tasks</title>
 <Style>
 div#high {
 	color: #FF0000
@@ -10,13 +10,7 @@ div#high {
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-	<h1>Result</h1>
-	<div id="high"></div>
-	<div id="content">
-		<div th:each="elem:${message}">
-			<p th:text="${elem}" />
-		</div>
-	</div>
+	<h1 th:text="${result}">Result</h1>
 
 </body>
 </html>

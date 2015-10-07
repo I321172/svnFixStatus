@@ -47,6 +47,8 @@ public class SmartDataMySqlSourceImp extends MysqlDataSource implements SmartDat
             }
         }
         conns.clear();
+        point = 0;
+        count = 0;
     }
 
     private static final long serialVersionUID = 1L;

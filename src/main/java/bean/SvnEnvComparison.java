@@ -40,6 +40,11 @@ public class SvnEnvComparison
         return envInfo;
     }
 
+    public void refreshEnvActualInfo()
+    {
+        envInfo.clear();
+    }
+
     public void addEnvInfo(EnvActualInfo envInfo)
     {
         this.envInfo.add(envInfo);

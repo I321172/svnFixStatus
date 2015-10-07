@@ -88,8 +88,9 @@ public class SVNUtils
         return svnInfoBean;
     }
 
-    private void handleSvnEnvComparison(SvnInfoBean svnInfoBean)
+    public void handleSvnEnvComparison(SvnInfoBean svnInfoBean)
     {
+        svnInfoBean.refreshSvnEnvCompaList();
         for (SvnEnvComparison instance : svnInfoBean.getSvnEnvComparison())
         {
             for (EnvEnum env : EnvEnum.values())

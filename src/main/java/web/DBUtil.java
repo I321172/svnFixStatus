@@ -1,12 +1,14 @@
 package web;
 
 import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import utils.SmartDataOracleSourceImp;
 import bean.CoverageBean;
 import bean.FeatureCoverage;
 import bean.CoverageMapper;
@@ -60,6 +62,14 @@ public class DBUtil
         List<String> features = jdbc.queryForList(sql, String.class);
         log("Get All Feature list, size =" + features.size());
         return features;
+    }
+
+    public void releaseConnectionPool()
+    {
+        if (jdbc.getDataSource() instanceof SmartDataOracleSourceImp)
+        {
+            ((SmartDataOracleSourceImp) jdbc.getDataSource()).closeAllConnections();
+        }
     }
 
     private void log(String msg)

@@ -71,6 +71,17 @@ public class SvnInfoBean
         return instance;
     }
 
+    /**
+     * Refresh actual info to regain from sf-version.properties
+     */
+    public void refreshSvnEnvCompaList()
+    {
+        for (SvnEnvComparison envCom : svnEnvComparison)
+        {
+            envCom.refreshEnvActualInfo();
+        }
+    }
+
     public void verifyValuable()
     {
         for (SvnEnvComparison comp : svnEnvComparison)

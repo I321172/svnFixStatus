@@ -42,33 +42,44 @@ public class RequestController
         SVNUtils svnUtil = Application.context.getBean(SVNUtils.class);
         long version = getCheckInVersion(checkInVersion);
 
-        CacheData cache = Application.context.getBean("cacheData", CacheData.class);
-        SvnInfoBean svnInfo = cache.getStoredSvnInfo(version);
-        if (svnInfo == null)
+        // CacheData cache = Application.context.getBean("cacheData",
+        // CacheData.class);
+        // SvnInfoBean svnInfo = cache.getStoredSvnInfo(version);
+        // if (svnInfo == null)
+        // {
+        // try
+        // {
+        // svnInfo = svnUtil.checkFixCodeInLatestBuildVersion(version);
+        // svnInfo.verifyValuable();
+        // if (svnInfo.isValuable())
+        // {
+        // cache.putStoredRevision(version, svnInfo);
+        // }
+        // } catch (Exception e)
+        // {
+        // log("SVN fetch version failed by " + e.getMessage());
+        // }
+        // } else
+        // {
+        // log("Get cached SVN Info; Revision: " + version);
+        // }
+        SvnInfoBean svnInfo = null;
+        try
         {
-            try
-            {
-                svnInfo = svnUtil.checkFixCodeInLatestBuildVersion(version);
-                svnInfo.verifyValuable();
-                if (svnInfo.isValuable())
-                {
-                    cache.putStoredRevision(version, svnInfo);
-                }
-            } catch (Exception e)
-            {
-                log("SVN fetch version failed by " + e.getMessage());
-            }
-        } else
+            svnInfo = svnUtil.checkFixCodeInLatestBuildVersion(version);
+            svnInfo.verifyValuable();
+        } catch (Exception e)
         {
-            log("Get cached SVN Info; Revision: " + version);
+            log("SVN fetch version failed by " + e.getMessage());
         }
+
         model.addAttribute("svnInfo", svnInfo);
         return "svn";
     }
 
     private int getCheckInVersion(String checkInVersion)
     {
-        if (checkInVersion.matches("\\d*"))
+        if (checkInVersion.matches("\\d+"))
         {
             return Integer.parseInt(checkInVersion);
         } else
@@ -88,11 +99,22 @@ public class RequestController
         return "showcoverage";
     }
 
-    @RequestMapping(value = "/test/fix")
-    public String testFix(Model model)
+    @RequestMapping(value = "/refresh/task")
+    public String testFix(Model model) throws Exception
     {
-        model.addAttribute("message", "Test OK");
-        return "result";
+        ScheduledTasks tasks = Application.context.getBean(ScheduledTasks.class);
+        tasks.refreshEnvSFVersion();
+        model.addAttribute("result", "Schedule Task Triggered Success! ");
+        return "refresh";
+    }
+
+    @RequestMapping(value = "/refresh/conn")
+    public String refreshConnect(Model model) throws Exception
+    {
+        DBUtil util = Application.context.getBean("dbUtil", DBUtil.class);
+        util.releaseConnectionPool();
+        model.addAttribute("result", "Connection All Closed! Connection Pool Refreshed!");
+        return "refresh";
     }
 
     private FeatureCoverage getFeature(String feature, boolean fetchAll)

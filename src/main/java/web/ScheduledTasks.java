@@ -16,7 +16,7 @@ public class ScheduledTasks
     private Logger logger = Logger.getLogger(getClass());
 
     @Scheduled(fixedRate = 10000000)
-    public void reportCurrentTime() throws Exception
+    public void refreshEnvSFVersion() throws Exception
     {
         log("Start to Fetch Environment Version in ScheduledTask!");
         fetchEnvVersionInfo();

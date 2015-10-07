@@ -40,7 +40,7 @@ public class SmartDataOracleSourceImp extends OracleDataSource implements SmartD
         return conns.get(point++);
     }
 
-    public void closeAllConnectoins()
+    public void closeAllConnections()
     {
         for (Connection con : conns)
         {
@@ -56,6 +56,8 @@ public class SmartDataOracleSourceImp extends OracleDataSource implements SmartD
             }
         }
         conns.clear();
+        point = 0;
+        count = 0;
     }
 
     @Override
