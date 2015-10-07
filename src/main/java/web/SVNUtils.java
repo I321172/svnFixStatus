@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
@@ -26,23 +27,29 @@ import bean.SvnInfoBean;
 @Repository
 public class SVNUtils
 {
-    private Logger              logger = Logger.getLogger(getClass());
-    private final static String url    = "https://svn.successfactors.com/repos/";
-    private SVNRepository       repository;
+    private Logger        logger = Logger.getLogger(getClass());
+    @Value("${svn.url}")
+    private String        svnUrl /* = "https://svn.successfactors.com/repos/" */;
+    @Value("${svn.user}")
+    private String        svnUser /* = "lguan" */;
+    @Value("${svn.pwd}")
+    private String        svnPwd /* = "TLrVfAQ" */;
+    private SVNRepository repository;
 
     public SVNUtils()
     {
         setupLibrary();
         try
         {
-            repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(url));
+            repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(svnUrl));
         } catch (SVNException e)
         {
             // TODO Auto-generated catch block
             logger.error(e.getMessage());
         }
         @SuppressWarnings("deprecation")
-        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager("adamzhang", "cMpgSrdj");
+        /* "adamzhang", "cMpgSrdj" */
+        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(svnUser, svnPwd);
         repository.setAuthenticationManager(authManager);
     }
 
