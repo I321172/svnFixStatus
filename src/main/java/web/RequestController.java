@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import web.aop.log.LogAdvice;
 import bean.CoverageBean;
 import bean.FeatureCoverage;
 import bean.SvnInfoBean;
@@ -91,7 +92,7 @@ public class RequestController
     }
 
     @RequestMapping(value = "/refresh/task")
-    public String testFix(Model model) throws Exception
+    public String refreshTask(Model model) throws Exception
     {
         ScheduledTasks tasks = Application.context.getBean(ScheduledTasks.class);
         tasks.refreshEnvSFVersion();
@@ -105,6 +106,16 @@ public class RequestController
         DBUtil util = Application.context.getBean("dbUtil", DBUtil.class);
         util.releaseConnectionPool();
         model.addAttribute("result", "Connection All Closed! Connection Pool Refreshed!");
+        return "refresh";
+    }
+
+    @RequestMapping(value = "/show/status")
+    public String showRequestStatus(Model model) throws Exception
+    {
+        LogAdvice advice = Application.context.getBean("logAdvice", LogAdvice.class);
+        String msg = "SVN Fix Status Visit Count: " + advice.getSvnCount() + "; Code Covereage Visit Count: "
+                + advice.getCoverageCount();
+        model.addAttribute("result", msg);
         return "refresh";
     }
 

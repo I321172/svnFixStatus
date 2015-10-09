@@ -57,7 +57,6 @@ public class SVNUtils
     public SvnInfoBean checkFixCodeInLatestBuildVersion(long checkInVersion) throws Exception
     {
         SvnInfoBean svnInfoBean = new SvnInfoBean();
-        log("Start to fetch SVN info for version:" + checkInVersion);
         @SuppressWarnings("unchecked")
         Collection<SVNLogEntry> logEntries = repository.log(new String[] { "" }, null, checkInVersion, checkInVersion,
                 true, true);

@@ -4,21 +4,43 @@ import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
 public class LogAdvice
 {
-    private Logger logger = Logger.getLogger(getClass());
+    private Logger logger        = Logger.getLogger(getClass());
+    private int    svnCount      = 1;
+    private int    coverageCount = 1;
 
-    @Around("web.aop.log.LogPointCut.logSvnAction()")
-    public Object logSvnAction(ProceedingJoinPoint pjp) throws Throwable
+    @Around(value = "web.aop.log.LogPointCut.logSvnAction(param)", argNames = "param")
+    public Object logSvnAction(ProceedingJoinPoint pjp, long param) throws Throwable
     {
+        log("Start to fetch SVN info for version:" + param);
         long start = getTime();
         Object result = pjp.proceed();
         log("SVN action takes " + getDuration(start));
         return result;
+    }
+
+    @Before(value = "web.aop.log.LogPointCut.countSVNVisit()")
+    public void countSVNVisit()
+    {
+        log("Fetch SVN Fix Status; Count = " + svnCount++);
+    }
+
+    @Before(value = "web.aop.log.LogPointCut.countCodeCoverageVisit()")
+    public void countCodeCoverageVisit()
+    {
+        log("Fetch Code Coverage; Count = " + coverageCount++);
+    }
+
+    @Before(value = "web.aop.log.LogPointCut.logScheduleTask()")
+    public void logScheduleTask()
+    {
+        log("Start to Execute ScheduledTask!");
     }
 
     private long getTime()
@@ -36,4 +58,15 @@ public class LogAdvice
     {
         logger.info(msg);
     }
+
+    public int getSvnCount()
+    {
+        return svnCount;
+    }
+
+    public int getCoverageCount()
+    {
+        return coverageCount;
+    }
+
 }
