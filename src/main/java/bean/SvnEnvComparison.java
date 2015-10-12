@@ -104,7 +104,7 @@ public class SvnEnvComparison
             this.fix = isFixed;
             if (isFixed)
             {
-                fixStatus = "Fixed";
+                fixStatus = "GotFixed";
             } else
             {
                 fixStatus = "NotFixed";

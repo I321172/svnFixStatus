@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 public class LogAdvice
 {
     private Logger logger        = Logger.getLogger(getClass());
-    private int    svnCount      = 1;
-    private int    coverageCount = 1;
+    private int    svnCount      = 0;
+    private int    coverageCount = 0;
 
     @Around(value = "web.aop.log.LogPointCut.logSvnAction(param)", argNames = "param")
     public Object logSvnAction(ProceedingJoinPoint pjp, long param) throws Throwable
@@ -28,13 +28,13 @@ public class LogAdvice
     @Before(value = "web.aop.log.LogPointCut.countSVNVisit()")
     public void countSVNVisit()
     {
-        log("Fetch SVN Fix Status; Count = " + svnCount++);
+        log("Fetch SVN Fix Status; Count = " + ++svnCount);
     }
 
     @Before(value = "web.aop.log.LogPointCut.countCodeCoverageVisit()")
     public void countCodeCoverageVisit()
     {
-        log("Fetch Code Coverage; Count = " + coverageCount++);
+        log("Fetch Code Coverage; Count = " + ++coverageCount);
     }
 
     @Before(value = "web.aop.log.LogPointCut.logScheduleTask()")
