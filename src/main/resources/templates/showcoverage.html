@@ -15,12 +15,6 @@ th {
 	padding: 0px 10px 0px 10px
 }
 
-th[sort] {
-	background-image: url(/images/sort.gif);
-	background-repeat: no-repeat;
-	background-position: right;
-}
-
 td#name {
 	padding: 0px 10px 0px 0px;
 	text-align: left;
@@ -28,10 +22,13 @@ td#name {
 
 thead th {
 	background-color: #a4c2f4;
+	background-image: url(/images/sort.gif);
+	background-repeat: no-repeat;
+	background-position: right;
 }
 </Style>
 
-<script th:src="@{/js/fun.js}"></script>
+<script th:src="@{/js/coverage.js}"></script>
 <script th:inline="javascript">
 
 	var urlPrefix=[[${urlPrefix}]];
@@ -56,15 +53,15 @@ thead th {
 		<thead id='thead'>
 			<tr>
 				<th th:text="'Name in Feature:'+${list[1].feature}">Name</th>
-				<th sort="1" onclick="sortTable(this)">NewTotalCoverage</th>
-				<th sort="2" onclick="sortTable(this)">OldTotalCoverage</th>
-				<th sort="3" onclick="sortTable(this)">CoverageDiff</th>
-				<th sort="4" onclick="sortTable(this)">NewTotalLine</th>
-				<th sort="5" onclick="sortTable(this)">OldTotalLine</th>
-				<th sort="6" onclick="sortTable(this)">TotalLineDiff</th>
-				<th sort="7" onclick="sortTable(this)">NewTotalLinesExecuted</th>
-				<th sort="8" onclick="sortTable(this)">OldTotalLInesExecuted</th>
-				<th sort="9" onclick="sortTable(this)">ToBecovered</th>
+				<th onclick="sortTable(this)">NewTotalCoverage</th>
+				<th onclick="sortTable(this)">OldTotalCoverage</th>
+				<th onclick="sortTable(this)">CoverageDiff</th>
+				<th onclick="sortTable(this)">NewTotalLine</th>
+				<th onclick="sortTable(this)">OldTotalLine</th>
+				<th onclick="sortTable(this)">TotalLineDiff</th>
+				<th onclick="sortTable(this)">NewTotalLinesExecuted</th>
+				<th onclick="sortTable(this)">OldTotalLInesExecuted</th>
+				<th onclick="sortTable(this)">ToBecovered</th>
 			</tr>
 		</thead>
 		<tbody th:id="myTable">

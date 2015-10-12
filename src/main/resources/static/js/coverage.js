@@ -1,5 +1,4 @@
 var preTarget;
-var sortIndex = 1;
 var data;
 var original;
 var isMain = true;
@@ -58,8 +57,19 @@ function readMainTable() {
 	return data;
 }
 
+function getIndex(node) {
+	if (node) {
+		var index = 0;
+		while (node = node.previousSibling) {
+			if (node.nodeType == 1)
+				index++;
+		}
+		return index;
+	}
+}
+
 function sortArray(dom) {
-	sortIndex = parseInt(dom.getAttribute("sort")) + 1;
+	var sortIndex = getIndex(dom) + 1;
 	var arr = getValues(dom);
 
 	for (var i = 0; i < arr.length; i++) {
@@ -163,7 +173,6 @@ function createHeader(arr) {
 		var td = document.createElement("th");
 		if (j > 0) {
 			td.setAttribute("onclick", "sortTable(this)");
-			td.setAttribute("sort", j);
 		}
 		td.innerHTML = orig.rows[0].cells[j].innerHTML;
 		tr.appendChild(td);
