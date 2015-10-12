@@ -1,8 +1,14 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<title>Refresh Schedule Tasks</title>
+<title>AEP Run Information</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script th:src="@{/js/coverage.js}"></script>
+<script th:inline="javascript">
+
+	var urlPrefix=[[${urlPrefix}]];
+}
+</script>
 </head>
 <body>
 	<h1 th:text="${result}">Result</h1>

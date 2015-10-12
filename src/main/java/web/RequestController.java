@@ -29,10 +29,12 @@ public class RequestController
         {
             featureCov = getFeature(feature, false);
             model.addAttribute("list", featureCov.getOnlyPackagelist());
+            model.addAttribute("urlPrefix", getCoverageFilePrefix());
         } else
         {
             featureCov = getFeature(feature, true);
             model.addAttribute("list", featureCov.getList());
+            model.addAttribute("urlPrefix", getCoverageFilePrefix());
         }
         return "showcoverage";
     }
@@ -86,9 +88,14 @@ public class RequestController
     public String test(Model model)
     {
         model.addAttribute("list", getTest());
-        CacheData cache = Application.context.getBean("cacheData", CacheData.class);
-        model.addAttribute("urlPrefix", cache.getCoverageFilePrefix());
+        model.addAttribute("urlPrefix", getCoverageFilePrefix());
         return "showcoverage";
+    }
+
+    private String getCoverageFilePrefix()
+    {
+        CacheData cache = Application.context.getBean("cacheData", CacheData.class);
+        return cache.getCoverageFilePrefix();
     }
 
     @RequestMapping(value = "/refresh/task")
