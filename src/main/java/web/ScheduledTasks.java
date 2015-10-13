@@ -9,7 +9,7 @@ import bean.EnvEnum;
 @Component
 public class ScheduledTasks
 {
-    @Scheduled(fixedRate = 3600000)
+    @Scheduled(fixedRate = 9900000)
     public void refreshEnvSFVersion() throws Exception
     {
         fetchEnvVersionInfo();
@@ -17,9 +17,10 @@ public class ScheduledTasks
 
     private void fetchEnvVersionInfo() throws Exception
     {
+        HttpClientUtil httpUtil = new HttpClientUtil();
         for (EnvEnum elem : EnvEnum.values())
         {
-            elem.setVersionInfo(HttpClientUtil.getSFVersion(elem.toVersionUrl(), elem.isNeedProxy()));
+            elem.setVersionInfo(httpUtil.getSFVersion(elem.toVersionUrl(), elem.isNeedProxy()));
         }
     }
 }
