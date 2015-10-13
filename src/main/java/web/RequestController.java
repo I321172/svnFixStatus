@@ -81,7 +81,12 @@ public class RequestController
             log("Invalid Number:" + checkInVersion + "; Set version as 1");
             return 1;
         }
+    }
 
+    @RequestMapping(value = "/show/aep")
+    public String fetchAEPRunningJobs(Model model)
+    {
+        return "aeprun";
     }
 
     @RequestMapping(value = "/test")

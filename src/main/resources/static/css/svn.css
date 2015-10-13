@@ -1,0 +1,29 @@
+table {
+	text-align: left;
+}
+
+td {
+	padding: 0px 50px 0px 0px;
+}
+
+p.bg {
+	background-color: #a4c2f4;
+}
+
+table.GotFixed {
+	background-color: green;
+	color: white;
+}
+
+table.NotFixed {
+	background-color: red;
+	color: white;
+}
+
+table.NONE {
+	background-color: yellow;
+}
+
+a {
+	color: white;
+}

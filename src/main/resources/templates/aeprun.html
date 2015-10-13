@@ -3,7 +3,7 @@
 <head>
 <title>AEP Run Information</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<script th:src="@{/js/coverage.js}"></script>
+<script th:src="@{/js/aeprun.js}"></script>
 <script th:inline="javascript">
 
 	var urlPrefix=[[${urlPrefix}]];
@@ -11,7 +11,11 @@
 </script>
 </head>
 <body>
-	<h1 th:text="${result}">Result</h1>
+	<h1 onclick="fetchRunningJobs()">Click to Test AJAX</h1>
+	<div id="running">
+		<label id="showmsg">Show Ajax Rquest ResponseText</label>
+	</div>
+	<div id="complete"></div>
 
 </body>
 </html>
