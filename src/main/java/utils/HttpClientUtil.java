@@ -5,6 +5,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
@@ -148,6 +149,72 @@ public class HttpClientUtil
             log("Disable redirect in httpclient!");
         }
         return config;
+    }
+
+    /**
+     * Append Default Proxy :proxy:8080
+     * 
+     * @param url
+     * @param cookieName
+     * @return
+     * @throws Exception
+     */
+    public String getCookieValue(String url, String cookieName) throws Exception
+    {
+        return getCookieValue(url, true, cookieName);
+    }
+
+    public String getCookieValue(String url, boolean isProxy, String cookieName) throws Exception
+    {
+        Map<String, String> respHeaders = getHttpResponseHeader(url, isProxy);
+        String cookie = respHeaders.get("Cookie");
+        if (isNull(cookie))
+            return null;
+        String result = null;
+        if (cookie.contains(cookieName))
+        {
+            result = cookie.replaceAll(".*(" + cookieName + ".*?);.*", "$1");
+        }
+        return result;
+    }
+
+    public Map<String, String> getHttpResponseHeader(String url, boolean isProxy) throws Exception
+    {
+        return getHttpResponseHeader(url, isProxy, null, true);
+    }
+
+    public Map<String, String> getHttpResponseHeader(String url, boolean isProxy, String customProxy,
+            boolean isDisableRedirect) throws Exception
+    {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        RequestConfig httpConfig = getRequestConfig(isProxy, customProxy, isDisableRedirect);
+        HttpGet method = new HttpGet(url);
+        method.setConfig(httpConfig);
+        addHeader(method);
+        log(methodType + " on [" + url + "]");
+
+        CloseableHttpResponse response = httpClient.execute(method);
+        log("HttpClient executed with status: " + response.getStatusLine().getStatusCode());
+        return convertResponseHeaders(response.getAllHeaders());
+    }
+
+    private Map<String, String> convertResponseHeaders(Header[] headers)
+    {
+        Map<String, String> result = new HashMap<String, String>();
+        for (Header header : headers)
+        {
+            String name = header.getName();
+            String headerValue = result.get(name);
+            if (headerValue == null)
+            {
+                headerValue = header.getValue();
+            } else
+            {
+                headerValue += "; " + header.getValue();
+            }
+            result.put(name, headerValue);
+        }
+        return result;
     }
 
     private boolean isNull(String text)

@@ -24,4 +24,8 @@ public class LogPointCut
     public void logScheduleTask()
     {}
 
+    @Pointcut(value = "execution(* web.Sche*.refreshEnv*())")
+    public void logScheduleTaskFetchEnv()
+    {}
+
 }

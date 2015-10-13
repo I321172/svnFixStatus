@@ -16,7 +16,7 @@ import utils.SmartDataMySqlSourceImp;
 import utils.SmartDataOracleSourceImp;
 
 @Configuration
-@ImportResource("properties-config.xml")
+@ImportResource("classpath*:properties-config.xml")
 public class AppConfig
 {
     private Logger logger = Logger.getLogger(getClass());

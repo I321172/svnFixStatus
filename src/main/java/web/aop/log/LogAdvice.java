@@ -2,6 +2,7 @@ package web.aop.log;
 
 import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -41,6 +42,12 @@ public class LogAdvice
     public void logScheduleTask()
     {
         log("Start to Execute ScheduledTask!");
+    }
+
+    @After(value = "web.aop.log.LogPointCut.logScheduleTaskFetchEnv()")
+    public void logScheduleTaskEnv()
+    {
+        log("All Envirionment Version are fetched!");
     }
 
     private long getTime()
