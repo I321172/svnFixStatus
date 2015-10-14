@@ -42,10 +42,10 @@ public class RequestController
     @RequestMapping(value = "/show/fix")
     public String checkSVNFix(@RequestParam(value = "checkInVersion") String checkInVersion, Model model)
     {
-        SVNUtils svnUtil = Application.context.getBean(SVNUtils.class);
+        SVNUtils svnUtil = MyApplicationContext.context.getBean(SVNUtils.class);
         long version = getCheckInVersion(checkInVersion);
 
-        CacheData cache = Application.context.getBean("cacheData", CacheData.class);
+        CacheData cache = MyApplicationContext.context.getBean("cacheData", CacheData.class);
         SvnInfoBean svnInfo = cache.getStoredSvnInfo(version);
         if (svnInfo == null)
         {
@@ -99,14 +99,14 @@ public class RequestController
 
     private String getCoverageFilePrefix()
     {
-        CacheData cache = Application.context.getBean("cacheData", CacheData.class);
+        CacheData cache = MyApplicationContext.context.getBean("cacheData", CacheData.class);
         return cache.getCoverageFilePrefix();
     }
 
     @RequestMapping(value = "/refresh/task")
     public String refreshTask(Model model) throws Exception
     {
-        ScheduledTasks tasks = Application.context.getBean(ScheduledTasks.class);
+        ScheduledTasks tasks = MyApplicationContext.context.getBean(ScheduledTasks.class);
         tasks.refreshEnvSFVersion();
         model.addAttribute("result", "Schedule Task Triggered Success! ");
         return "refresh";
@@ -115,7 +115,7 @@ public class RequestController
     @RequestMapping(value = "/refresh/conn")
     public String refreshConnect(Model model) throws Exception
     {
-        DBUtil util = Application.context.getBean("dbUtil", DBUtil.class);
+        DBUtil util = MyApplicationContext.context.getBean("dbUtil", DBUtil.class);
         util.releaseConnectionPool();
         model.addAttribute("result", "Connection All Closed! Connection Pool Refreshed!");
         return "refresh";
@@ -124,7 +124,7 @@ public class RequestController
     @RequestMapping(value = "/show/status")
     public String showRequestStatus(Model model) throws Exception
     {
-        LogAdvice advice = Application.context.getBean("logAdvice", LogAdvice.class);
+        LogAdvice advice = MyApplicationContext.context.getBean("logAdvice", LogAdvice.class);
         String msg = "SVN Fix Status Visit Count: " + advice.getSvnCount() + "; Code Covereage Visit Count: "
                 + advice.getCoverageCount();
         model.addAttribute("result", msg);
@@ -133,12 +133,11 @@ public class RequestController
 
     private FeatureCoverage getFeature(String feature, boolean fetchAll)
     {
-        CacheData cache = Application.context.getBean("cacheData", CacheData.class);
-        DBUtil util = Application.context.getBean("dbUtil", DBUtil.class);
+        CacheData cache = MyApplicationContext.context.getBean("cacheData", CacheData.class);
+        DBUtil util = MyApplicationContext.context.getBean("dbUtil", DBUtil.class);
         FeatureCoverage featureData = cache.getFeatureData(feature);
         if (featureData == null)
         {
-
             if (fetchAll)
             {
                 log("Fetch class and package data for Feature:" + feature);
