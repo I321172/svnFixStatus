@@ -26,46 +26,38 @@
 	</table>
 
 	<p class="bg">Check In Details</p>
-	<table th:each="comp:${svnInfo.svnEnvComparison}">
+	<table th:each="comp:${svnInfo.svnEnvComparison}" border="1">
 		<tr>
-			<td>
-				<table border="1">
+			<th th:text="'Check In File '+${compStat.count}+':'">Full Path:</th>
+			<td colspan="3" th:text="${comp.path}" width="800">Here is the
+				Full path of the modified File in SVN revision</td>
+		</tr>
+		<tr>
+			<th>Module:</th>
+			<td th:text="${comp.feature}">Feature Name</td>
+			<th>SVN Revision:</th>
+			<td width="500" th:text="${svnInfo.revision}">839884</td>
+		</tr>
+		<tr th:each="envInfo:${comp.envInfo}">
+			<td colspan="4">
+				<table th:class="${envInfo.fixStatus}">
 					<tr>
-						<th th:text="'Check In File '+${compStat.count}+':'">Full
-							Path:</th>
-						<td colspan="3" th:text="${comp.path}" width="800">Here is
-							the Full path of the modified File in SVN revision</td>
+						<th colspan="5" th:text="'Environment: '+${envInfo.env}">Environment:
+							qaautocand</th>
 					</tr>
 					<tr>
-						<th>Module:</th>
-						<td th:text="${comp.feature}">Feature Name</td>
-						<th>SVN Revision:</th>
-						<td width="500" th:text="${svnInfo.revision}">839884</td>
-					</tr>
-					<tr th:each="envInfo:${comp.envInfo}">
-						<td colspan="4">
-							<table th:class="${envInfo.fixStatus}">
-								<tr>
-									<th colspan="5" th:text="'Environment: '+${envInfo.env}">Environment:
-										qaautocand</th>
-								</tr>
-								<tr>
-									<th>Env Revision: </th>
-									<td th:text="${envInfo.envRevision}">842152</td>
-									<th>Fix Status: </th>
-									<td th:text="${envInfo.fixStatus}">Already Fixed</td>
-									<td><a target="_blank"
-										href="https://qaautocand.sflab.ondemand.com/sf-version.properties"
-										th:href="${envInfo.env.toVersionUrl()}">More Details about
-											the Environment</a></td>
-								</tr>
-							</table>
-						</td>
+						<th>Env Revision:</th>
+						<td th:text="${envInfo.envRevision}">842152</td>
+						<th>Fix Status:</th>
+						<td th:text="${envInfo.fixStatus}">Already Fixed</td>
+						<td><a target="_blank"
+							href="https://qaautocand.sflab.ondemand.com/sf-version.properties"
+							th:href="${envInfo.env.toVersionUrl()}">More Details about
+								the Environment</a></td>
 					</tr>
 				</table>
 			</td>
 		</tr>
 	</table>
-
 </body>
 </html>
