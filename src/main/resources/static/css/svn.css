@@ -15,6 +15,14 @@ table.GotFixed {
 	color: white;
 }
 
+table.GotFixed a, table.NotFixed a {
+	color: white;
+}
+
+table.NONE a {
+	color: black;
+}
+
 table.NotFixed {
 	background-color: red;
 	color: white;
@@ -22,8 +30,4 @@ table.NotFixed {
 
 table.NONE {
 	background-color: yellow;
-}
-
-a {
-	color: #8080ff;
 }

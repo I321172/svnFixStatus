@@ -4,27 +4,47 @@
 <log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/'>
 
 	<appender name="myConsole" class="org.apache.log4j.ConsoleAppender">
+		<param name="threshold" value="info" />
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="[%d{dd HH:mm:ss,SSS\} %-5p] [%t] %c{2\} - %m%n" />
+			<param name="ConversionPattern" value="[%d{dd HH:mm:ss,SSS\} %-5p] [%t] %c - %m%n" />
 		</layout>
-		<filter class="org.apache.log4j.varia.LevelRangeFilter">
-			<param name="levelMin" value="info" />
-			<param name="AcceptOnMatch" value="true" />
-		</filter>
 	</appender>
 
 	<appender name="myFile" class="org.apache.log4j.RollingFileAppender">
-		<param name="File" value="C:\output.txt" />
+		<param name="threshold" value="debug" />
+		<param name="File" value="log/i321log.txt" />
 		<param name="Append" value="true" />
-		<param name="MaxBackupIndex" value="3" />
-		<!-- <param name="MaxFileSize" value="3MB" /> -->
+		<param name="MaxBackupIndex" value="10" />
+		<param name="MaxFileSize" value="2MB" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%p (%c:%L)- %m%n" />
 		</layout>
 	</appender>
 
+	<logger name="org.thymeleaf" additivity="false">
+		<level value="info" />
+		<appender-ref ref="myFile" />
+	</logger>
+
+	<logger name="org.springframework.core.env.PropertySourcesPropertyResolver"
+		additivity="false">
+		<level value="info" />
+		<appender-ref ref="myFile" />
+	</logger>
+
+	<logger name="org.springframework.core.env.MutablePropertySources"
+		additivity="false">
+		<level value="info" />
+		<appender-ref ref="myFile" />
+	</logger>
+
+	<logger name="org.apache.http" additivity="false">
+		<level value="info" />
+		<appender-ref ref="myFile" />
+	</logger>
+
 	<root>
-		<priority value="info" />
+		<priority value="debug" />
 		<appender-ref ref="myConsole" />
 		<appender-ref ref="myFile" />
 	</root>
