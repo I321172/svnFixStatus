@@ -13,10 +13,6 @@ public class Application extends SpringBootServletInitializer
     public static void main(String[] args)
     {
         SpringApplication.run(Application.class, args);
-
-        DBUtil dbUtil = MyApplicationContext.context.getBean("dbUtil", DBUtil.class);
-        CacheData cache = MyApplicationContext.context.getBean("cacheData", CacheData.class);
-        cache.setAllFeatures(dbUtil.getAllFeature());
     }
 
     @Override
