@@ -1,9 +1,9 @@
-package bean;
+package i321172.bean;
+
+import i321172.bean.SvnEnvComparison.EnvActualInfo;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import bean.SvnEnvComparison.EnvActualInfo;
 
 public class SvnInfoBean
 {

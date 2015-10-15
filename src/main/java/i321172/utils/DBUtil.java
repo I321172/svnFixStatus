@@ -1,4 +1,8 @@
-package web;
+package i321172.utils;
+
+import i321172.bean.CoverageBean;
+import i321172.bean.CoverageMapper;
+import i321172.bean.FeatureCoverage;
 
 import java.util.List;
 
@@ -6,14 +10,9 @@ import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-import utils.SmartDataOracleSourceImp;
-import bean.CoverageBean;
-import bean.FeatureCoverage;
-import bean.CoverageMapper;
-
-@Repository("dbUtil")
+@Service("dbUtil")
 public class DBUtil
 {
     @Resource(name = "jdbcTemplate")

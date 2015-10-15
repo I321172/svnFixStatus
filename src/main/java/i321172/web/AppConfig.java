@@ -1,4 +1,7 @@
-package web;
+package i321172.web;
+
+import i321172.utils.SmartDataMySqlSourceImp;
+import i321172.utils.SmartDataOracleSourceImp;
 
 import java.sql.SQLException;
 
@@ -11,9 +14,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.jdbc.core.JdbcTemplate;
-
-import utils.SmartDataMySqlSourceImp;
-import utils.SmartDataOracleSourceImp;
 
 @Configuration
 @ImportResource("classpath*:properties-config.xml")

@@ -1,4 +1,7 @@
-package web;
+package i321172.web;
+
+import i321172.bean.FeatureCoverage;
+import i321172.bean.SvnInfoBean;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,9 +12,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
-
-import bean.FeatureCoverage;
-import bean.SvnInfoBean;
 
 @Repository
 public class CacheData

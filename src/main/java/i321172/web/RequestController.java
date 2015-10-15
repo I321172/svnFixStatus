@@ -1,4 +1,11 @@
-package web;
+package i321172.web;
+
+import i321172.bean.CoverageBean;
+import i321172.bean.FeatureCoverage;
+import i321172.bean.SvnInfoBean;
+import i321172.utils.DBUtil;
+import i321172.utils.SVNUtils;
+import i321172.web.aop.log.LogAdvice;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +16,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import web.aop.log.LogAdvice;
-import bean.CoverageBean;
-import bean.FeatureCoverage;
-import bean.SvnInfoBean;
 
 @Controller
 public class RequestController

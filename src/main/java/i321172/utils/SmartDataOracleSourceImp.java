@@ -1,4 +1,4 @@
-package utils;
+package i321172.utils;
 
 import java.sql.Connection;
 import java.sql.SQLException;

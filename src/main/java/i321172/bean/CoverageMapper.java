@@ -1,4 +1,4 @@
-package bean;
+package i321172.bean;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

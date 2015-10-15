@@ -1,4 +1,9 @@
-package web;
+package i321172.utils;
+
+import i321172.bean.EnvEnum;
+import i321172.bean.SvnEnvComparison;
+import i321172.bean.SvnInfoBean;
+import i321172.bean.SvnEnvComparison.EnvActualInfo;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -7,7 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
@@ -18,12 +23,7 @@ import org.tmatesoft.svn.core.io.SVNRepository;
 import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
 import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
-import bean.EnvEnum;
-import bean.SvnEnvComparison;
-import bean.SvnEnvComparison.EnvActualInfo;
-import bean.SvnInfoBean;
-
-@Repository
+@Service
 public class SVNUtils
 {
     private Logger        logger  = Logger.getLogger(getClass());

@@ -1,4 +1,4 @@
-package web;
+package i321172;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

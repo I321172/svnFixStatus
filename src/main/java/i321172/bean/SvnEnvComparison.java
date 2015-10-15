@@ -1,4 +1,4 @@
-package bean;
+package i321172.bean;
 
 import java.util.ArrayList;
 import java.util.List;

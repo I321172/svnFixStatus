@@ -1,4 +1,4 @@
-package bean;
+package i321172.bean;
 
 public class Greeting {
 
