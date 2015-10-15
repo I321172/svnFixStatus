@@ -12,7 +12,7 @@
 
 	<appender name="myFile" class="org.apache.log4j.RollingFileAppender">
 		<param name="threshold" value="debug" />
-		<param name="File" value="log/i321log.txt" />
+		<param name="File" value="applog/log.txt" />
 		<param name="Append" value="true" />
 		<param name="MaxBackupIndex" value="10" />
 		<param name="MaxFileSize" value="2MB" />

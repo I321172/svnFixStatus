@@ -7,4 +7,4 @@ build.gradle
 gradlew
 gradlew.bat
 .git
-log
+applog
