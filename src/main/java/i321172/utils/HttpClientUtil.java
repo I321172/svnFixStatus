@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-@Service("httpClient")
+@Service()
 @Scope("prototype")
 public class HttpClientUtil
 {
@@ -31,6 +31,9 @@ public class HttpClientUtil
     private Logger              logger     = Logger.getLogger(getClass());
     private String              methodType = "Get";
 
+    /**
+     * Default with proxy:8080
+     */
     public String fetchWeb(String url) throws Exception
     {
         return fetchWeb(url, null);
@@ -41,7 +44,7 @@ public class HttpClientUtil
         return fetchWeb(url, true, customProxy);
     }
 
-    public String getSFVersion(String queryUrl, boolean isProxy) throws Exception
+    public String fetchWeb(String queryUrl, boolean isProxy) throws Exception
     {
         long start = getTime();
         StringBuffer msg = new StringBuffer("Fetch info in " + queryUrl);

@@ -15,7 +15,7 @@ public class ScheduledTasks
         HttpClientUtil httpUtil = MyApplicationContext.context.getBean(HttpClientUtil.class);
         for (EnvEnum elem : EnvEnum.values())
         {
-            elem.setVersionInfo(httpUtil.getSFVersion(elem.toVersionUrl(), elem.isNeedProxy()));
+            elem.setVersionInfo(httpUtil.fetchWeb(elem.toVersionUrl(), elem.isNeedProxy()));
         }
     }
 
