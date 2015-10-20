@@ -56,36 +56,37 @@ public class SVNUtils
 
     public SvnInfoBean checkFixCodeInLatestBuildVersion(long checkInVersion) throws Exception
     {
+        SVNLogEntry logEntry = getSingleLogEntry(checkInVersion);
+
         SvnInfoBean svnInfoBean = new SvnInfoBean();
-        @SuppressWarnings("unchecked")
-        Collection<SVNLogEntry> logEntries = repository.log(new String[] { "" }, null, checkInVersion, checkInVersion,
-                true, true);
-
-        for (Iterator<SVNLogEntry> entries = logEntries.iterator(); entries.hasNext();)
+        svnInfoBean.setRevision(logEntry.getRevision());
+        svnInfoBean.setAuthor(logEntry.getAuthor());
+        svnInfoBean.setCreateDate(logEntry.getDate().toString());
+        svnInfoBean.setComment(logEntry.getMessage());
+        int changeSize = logEntry.getChangedPaths().size();
+        log("Fetched " + changeSize + " SVN file changes");
+        if (changeSize > 0)
         {
-            SVNLogEntry logEntry = (SVNLogEntry) entries.next();
+            Set<String> changedPathsSet = logEntry.getChangedPaths().keySet();
 
-            svnInfoBean.setRevision(logEntry.getRevision());
-            svnInfoBean.setAuthor(logEntry.getAuthor());
-            svnInfoBean.setCreateDate(logEntry.getDate().toString());
-            svnInfoBean.setComment(logEntry.getMessage());
-            int changeSize = logEntry.getChangedPaths().size();
-            log("Fetched " + changeSize + " SVN file changes");
-            if (changeSize > 0)
+            for (Iterator<String> changedPaths = changedPathsSet.iterator(); changedPaths.hasNext();)
             {
-                Set<String> changedPathsSet = logEntry.getChangedPaths().keySet();
-
-                for (Iterator<String> changedPaths = changedPathsSet.iterator(); changedPaths.hasNext();)
-                {
-                    SVNLogEntryPath entryPath = (SVNLogEntryPath) logEntry.getChangedPaths().get(changedPaths.next());
-                    svnInfoBean.createSvnEnvCompaInstance(entryPath.getPath());
-                }
+                SVNLogEntryPath entryPath = (SVNLogEntryPath) logEntry.getChangedPaths().get(changedPaths.next());
+                svnInfoBean.createSvnEnvCompaInstance(entryPath.getPath());
             }
         }
 
         handleSvnEnvComparison(svnInfoBean);
 
         return svnInfoBean;
+    }
+
+    private SVNLogEntry getSingleLogEntry(long checkInVersion) throws SVNException
+    {
+        @SuppressWarnings("unchecked")
+        Collection<SVNLogEntry> logEntries = repository.log(new String[] { "" }, null, checkInVersion, checkInVersion,
+                true, true);
+        return logEntries.iterator().next();
     }
 
     public void handleSvnEnvComparison(SvnInfoBean svnInfoBean)

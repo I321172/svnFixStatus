@@ -16,8 +16,5 @@ public class MyApplicationContext implements ApplicationContextAware
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException
     {
         context = applicationContext;
-        DBUtil dbUtil = context.getBean("dbUtil", DBUtil.class);
-        CacheData cache = context.getBean("cacheData", CacheData.class);
-        cache.setAllFeatures(dbUtil.getAllFeature());
     }
 }
