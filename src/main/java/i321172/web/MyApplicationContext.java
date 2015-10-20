@@ -1,7 +1,5 @@
 package i321172.web;
 
-import i321172.utils.DBUtil;
-
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
