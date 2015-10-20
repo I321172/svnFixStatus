@@ -14,6 +14,18 @@ public class SvnInfoBean
     private List<SvnEnvComparison> svnEnvComparison = new ArrayList<SvnEnvComparison>();
     private boolean                valuable;
 
+    public SvnInfoBean()
+    {
+
+    }
+
+    public SvnInfoBean(long revision, String author, String createDate)
+    {
+        setRevision(revision);
+        setAuthor(author);
+        setCreateDate(createDate);
+    }
+
     public long getRevision()
     {
         return revision;

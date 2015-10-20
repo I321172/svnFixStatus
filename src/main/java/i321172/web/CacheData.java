@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -13,27 +12,6 @@ public class CacheData
 {
 
     private Map<Long, SvnInfoBean> storedRevision = new LinkedHashMap<Long, SvnInfoBean>();
-
-    @Value("${urlPrefix}")
-    private String                 urlPrefix;
-
-    @Value("${currentTime}")
-    private String                 currentTime;
-
-    public String getUrlPrefix()
-    {
-        return urlPrefix;
-    }
-
-    public String getCurrentTime()
-    {
-        return currentTime;
-    }
-
-    public String getCoverageFilePrefix()
-    {
-        return getUrlPrefix() + getCurrentTime();
-    }
 
     public Map<Long, SvnInfoBean> getStoredRevision()
     {

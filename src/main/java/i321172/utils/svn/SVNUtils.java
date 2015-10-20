@@ -1,58 +1,43 @@
-package i321172.utils;
+package i321172.utils.svn;
 
 import i321172.bean.EnvEnum;
 import i321172.bean.SvnEnvComparison;
 import i321172.bean.SvnInfoBean;
 import i321172.bean.SvnEnvComparison.EnvActualInfo;
 
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Resource;
+
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
+import org.tmatesoft.svn.core.ISVNLogEntryHandler;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
-import org.tmatesoft.svn.core.SVNURL;
-import org.tmatesoft.svn.core.auth.ISVNAuthenticationManager;
-import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
 import org.tmatesoft.svn.core.io.SVNRepository;
-import org.tmatesoft.svn.core.io.SVNRepositoryFactory;
-import org.tmatesoft.svn.core.wc.SVNWCUtil;
 
 @Service
 public class SVNUtils
 {
-    private Logger        logger  = Logger.getLogger(getClass());
-    private String        svnUrl  = "https://svn.successfactors.com/repos/";
-    private String        svnUser = "lguan";
-    private String        svnPwd  = "TLrVfAQ";
-    private SVNRepository repository;
+    private Logger                logger      = Logger.getLogger(getClass());
+
+    @Resource(name = "svnRepository")
+    private SVNRepository         repository;
+    private final static String[] subPackages = {
+            "uitests.purewebdriver/src/java/com/successfactors/saf/tests/systemUltra/regression",
+            "uitests.purewebdriver/src/java/com/successfactors/saf/tests/systemUltra/sanity",
+            "uitests.purewebdriver/src/java/com/successfactors/saf/tests/system/regression",
+            "uitests.purewebdriver/src/java/com/successfactors/saf/tests/system/sanity",
+            "uitests.purewebdriver/src/java/com/successfactors/aaf/tests/system" };
 
     public SVNUtils()
-    {
-        setupLibrary();
-        try
-        {
-            repository = SVNRepositoryFactory.create(SVNURL.parseURIEncoded(svnUrl));
-        } catch (SVNException e)
-        {
-            // TODO Auto-generated catch block
-            logger.error("Fatal ERROR! " + e.getMessage());
-        }
-        @SuppressWarnings("deprecation")
-        /* "adamzhang", "cMpgSrdj" */
-        ISVNAuthenticationManager authManager = SVNWCUtil.createDefaultAuthenticationManager(svnUser, svnPwd);
-        repository.setAuthenticationManager(authManager);
-    }
-
-    private static void setupLibrary()
-    {
-        DAVRepositoryFactory.setup();
-    }
+    {}
 
     public SvnInfoBean checkFixCodeInLatestBuildVersion(long checkInVersion) throws Exception
     {
@@ -87,6 +72,17 @@ public class SVNUtils
         Collection<SVNLogEntry> logEntries = repository.log(new String[] { "" }, null, checkInVersion, checkInVersion,
                 true, true);
         return logEntries.iterator().next();
+    }
+
+    private void getSVNBasicLogEntry(long startRevision, long endRevision, BasicEntryHandler handler) throws Exception
+    {
+        if (startRevision < 0)
+        {
+            // this revision is created at 2015-1-2
+            startRevision = 695878;
+        }
+        repository.log(subPackages, startRevision, endRevision, true, true, handler);
+        handler.getResultList();
     }
 
     public void handleSvnEnvComparison(SvnInfoBean svnInfoBean)
@@ -143,41 +139,5 @@ public class SVNUtils
 
         return null;
     }
-
-    public void setSvnUrl(String svnUrl)
-    {
-        this.svnUrl = svnUrl;
-    }
-
-    public void setSvnUser(String svnUser)
-    {
-        this.svnUser = svnUser;
-    }
-
-    public void setSvnPwd(String svnPwd)
-    {
-        this.svnPwd = svnPwd;
-    }
-
-    public String getSvnUrl()
-    {
-        return svnUrl;
-    }
-
-    public String getSvnUser()
-    {
-        return svnUser;
-    }
-
-    public String getSvnPwd()
-    {
-        return svnPwd;
-    }
-
-    // public static void main(String args[]) throws Exception
-    // {
-    // SVNUtils tool = new SVNUtils();
-    // tool.fetchBuildVersionInfo();
-    // }
 
 }

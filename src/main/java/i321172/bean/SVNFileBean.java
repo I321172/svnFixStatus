@@ -3,11 +3,16 @@ package i321172.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CompileInfoBean
+public class SVNFileBean
 {
     private String       className;
     private SvnInfoBean  svnInfo;
     private List<String> content = new ArrayList<String>();
+
+    public SVNFileBean(String className)
+    {
+        setClassName(className);
+    }
 
     public String getClassName()
     {

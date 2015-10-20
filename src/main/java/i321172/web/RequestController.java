@@ -3,8 +3,9 @@ package i321172.web;
 import i321172.bean.SvnInfoBean;
 import i321172.utils.DBUtil;
 import i321172.utils.HttpClientUtil;
-import i321172.utils.SVNUtils;
+import i321172.utils.svn.SVNUtils;
 import i321172.web.aop.log.LogAdvice;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
