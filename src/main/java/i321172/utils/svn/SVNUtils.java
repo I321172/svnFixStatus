@@ -4,6 +4,8 @@ import i321172.bean.EnvEnum;
 import i321172.bean.SvnEnvComparison;
 import i321172.bean.SvnInfoBean;
 import i321172.bean.SvnEnvComparison.EnvActualInfo;
+import i321172.utils.DBUtil;
+import i321172.web.MyApplicationContext;
 
 import java.text.ParseException;
 import java.util.Collection;
@@ -30,11 +32,11 @@ public class SVNUtils
     @Resource(name = "svnRepository")
     private SVNRepository         repository;
     private final static String[] subPackages = {
-            "uitests.purewebdriver/src/java/com/successfactors/saf/tests/systemUltra/regression",
-            "uitests.purewebdriver/src/java/com/successfactors/saf/tests/systemUltra/sanity",
-            "uitests.purewebdriver/src/java/com/successfactors/saf/tests/system/regression",
-            "uitests.purewebdriver/src/java/com/successfactors/saf/tests/system/sanity",
-            "uitests.purewebdriver/src/java/com/successfactors/aaf/tests/system" };
+            "V4/branches/offshore/uitests.purewebdriver/src/java/com/successfactors/saf/tests/systemUltra/regression",
+            "V4/branches/offshore/uitests.purewebdriver/src/java/com/successfactors/saf/tests/systemUltra/sanity",
+            "V4/branches/offshore/uitests.purewebdriver/src/java/com/successfactors/saf/tests/system/regression",
+            "V4/branches/offshore/uitests.purewebdriver/src/java/com/successfactors/saf/tests/system/sanity",
+            "V4/branches/offshore/uitests.purewebdriver/src/java/com/successfactors/aaf/tests/system" };
 
     public SVNUtils()
     {}
@@ -74,13 +76,10 @@ public class SVNUtils
         return logEntries.iterator().next();
     }
 
-    private void getSVNBasicLogEntry(long startRevision, long endRevision, BasicEntryHandler handler) throws Exception
+    public void getSVNBasicLogEntry(long endRevision, BasicEntryHandler handler) throws Exception
     {
-        if (startRevision < 0)
-        {
-            // this revision is created at 2015-1-2
-            startRevision = 695878;
-        }
+        long startRevision = MyApplicationContext.context.getBean(DBUtil.class).getNearestRevision(
+                handler.getStartDateString());
         repository.log(subPackages, startRevision, endRevision, true, true, handler);
         handler.getResultList();
     }

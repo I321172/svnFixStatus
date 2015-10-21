@@ -3,6 +3,7 @@ package i321172.web;
 import i321172.bean.SvnInfoBean;
 import i321172.utils.DBUtil;
 import i321172.utils.HttpClientUtil;
+import i321172.utils.svn.AddEntryHandler;
 import i321172.utils.svn.SVNUtils;
 import i321172.web.aop.log.LogAdvice;
 
@@ -25,7 +26,7 @@ public class RequestController
     {
         SvnInfoBean svnInfo = checkSVNFix(checkInVersion);
         model.addAttribute("svnInfo", svnInfo);
-        return "svn";
+        return "svnfix";
     }
 
     @RequestMapping(value = "/show/fix/now")
@@ -34,7 +35,19 @@ public class RequestController
         refreshTask();
         SvnInfoBean svnInfo = checkSVNFix(checkInVersion);
         model.addAttribute("svnInfo", svnInfo);
-        return "svn";
+        return "svnfix";
+    }
+
+    @RequestMapping(value = "/show/svn")
+    public String showSvnInfo(@RequestParam(value = "author", defaultValue = "lguan") String author,
+            @RequestParam(value = "end", defaultValue = "-1") String end, @RequestParam(value = "after") String begin,
+            Model model) throws Exception
+    {
+        SVNUtils svnUtil = MyApplicationContext.context.getBean(SVNUtils.class);
+        AddEntryHandler handler = new AddEntryHandler(author, begin);
+        svnUtil.getSVNBasicLogEntry(convertVersion(end), handler);
+        model.addAttribute("svnList", handler.getResultList());
+        return "svninfo";
     }
 
     @RequestMapping(value = "/show/aep")
@@ -105,7 +118,7 @@ public class RequestController
     private SvnInfoBean checkSVNFix(String checkInVersion)
     {
         SVNUtils svnUtil = MyApplicationContext.context.getBean(SVNUtils.class);
-        long version = getCheckInVersion(checkInVersion);
+        long version = convertVersion(checkInVersion);
 
         CacheData cache = MyApplicationContext.context.getBean("cacheData", CacheData.class);
         SvnInfoBean svnInfo = cache.getStoredSvnInfo(version);
@@ -131,15 +144,15 @@ public class RequestController
         return svnInfo;
     }
 
-    private int getCheckInVersion(String checkInVersion)
+    private long convertVersion(String checkInVersion)
     {
         if (checkInVersion.matches("\\d+"))
         {
-            return Integer.parseInt(checkInVersion);
+            return Long.parseLong(checkInVersion);
         } else
         {
-            log("Invalid Number:" + checkInVersion + "; Set version as 1");
-            return 1;
+            log("Invalid Number:" + checkInVersion + "; Set version as -1");
+            return -1;
         }
     }
 

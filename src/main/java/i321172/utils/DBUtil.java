@@ -12,6 +12,14 @@ public class DBUtil
 
     public void releaseConnectionPool()
     {
+        ((SmartDataMySqlSourceImp) jdbc.getDataSource()).closeAllConnectoins();
+    }
 
+    public long getNearestRevision(String begin)
+    {
+        return jdbc
+                .queryForObject(
+                        "select revision from revision where to_days(date)-to_days(?)<10 and to_days(date)-to_days(?)>0 order by date desc limit 1",
+                        Integer.class, begin, begin);
     }
 }

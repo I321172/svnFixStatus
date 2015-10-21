@@ -95,6 +95,11 @@ public class BasicEntryHandler implements ISVNLogEntryHandler
         return startDate;
     }
 
+    public String getStartDateString() throws ParseException
+    {
+        return sdf.format(getStartDate());
+    }
+
     public void setStartDate(String startDate) throws ParseException
     {
         this.startDate = sdf.parse(startDate);
