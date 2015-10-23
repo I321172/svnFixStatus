@@ -4,10 +4,9 @@ import i321172.bean.EnvEnum;
 import i321172.bean.SvnEnvComparison;
 import i321172.bean.SvnInfoBean;
 import i321172.bean.SvnEnvComparison.EnvActualInfo;
-import i321172.utils.DBUtil;
+import i321172.utils.dao.DBUtil;
 import i321172.web.MyApplicationContext;
 
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
@@ -18,27 +17,20 @@ import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
-import org.tmatesoft.svn.core.ISVNLogEntryHandler;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.SVNLogEntry;
 import org.tmatesoft.svn.core.SVNLogEntryPath;
 import org.tmatesoft.svn.core.io.SVNRepository;
 
 @Service
-public class SVNUtils
+public class SVNUtil
 {
-    private Logger                logger      = Logger.getLogger(getClass());
+    private Logger        logger = Logger.getLogger(getClass());
 
     @Resource(name = "svnRepository")
-    private SVNRepository         repository;
-    private final static String[] subPackages = {
-            "V4/branches/offshore/uitests.purewebdriver/src/java/com/successfactors/saf/tests/systemUltra/regression",
-            "V4/branches/offshore/uitests.purewebdriver/src/java/com/successfactors/saf/tests/systemUltra/sanity",
-            "V4/branches/offshore/uitests.purewebdriver/src/java/com/successfactors/saf/tests/system/regression",
-            "V4/branches/offshore/uitests.purewebdriver/src/java/com/successfactors/saf/tests/system/sanity",
-            "V4/branches/offshore/uitests.purewebdriver/src/java/com/successfactors/aaf/tests/system" };
+    private SVNRepository repository;
 
-    public SVNUtils()
+    public SVNUtil()
     {}
 
     public SvnInfoBean checkFixCodeInLatestBuildVersion(long checkInVersion) throws Exception
@@ -76,12 +68,66 @@ public class SVNUtils
         return logEntries.iterator().next();
     }
 
-    public void getSVNBasicLogEntry(long endRevision, BasicEntryHandler handler) throws Exception
+    /**
+     * SVN Action!
+     * 
+     * @param handler
+     * @throws Exception
+     */
+    public void fetchSVNLogEntry(BasicEntryHandler handler) throws Exception
     {
-        long startRevision = MyApplicationContext.context.getBean(DBUtil.class).getNearestRevision(
-                handler.getStartDateString());
-        repository.log(subPackages, startRevision, endRevision, true, true, handler);
-        handler.getResultList();
+        DBUtil dbUtil = MyApplicationContext.getBean(DBUtil.class);
+        long startRevision = dbUtil.getNearestRevision(handler.getStartDateString());
+        long endRevision = dbUtil.getNearestRevision(handler.getEndDateString());
+        fetchSVNBasicLogEntry(handler, startRevision, endRevision);
+    }
+
+    /**
+     * SVN Action!
+     * 
+     * @param handler
+     * @param startRevision
+     * @param endRevision
+     * @throws Exception
+     */
+    public void fetchSVNBasicLogEntry(BasicEntryHandler handler, long startRevision, long endRevision) throws Exception
+    {
+        repository.log(handler.getSubPackage(), startRevision, endRevision, true, true, handler);
+    }
+
+    public void fetchSVNBasicLogEntry(LogEntryHandlerDBMapping handler, long startRevision, long endRevision)
+            throws Exception
+    {
+        repository.log(new String[] {}, startRevision, endRevision, true, true, handler);
+    }
+
+    public boolean isRevisionAvailable(long revision)
+    {
+        try
+        {
+            getSingleLogEntry(revision);
+            return true;
+        } catch (Exception e)
+        {
+            logger.debug(e.getMessage());
+            return false;
+        }
+    }
+
+    public long getRevisionAvailable(long revision, long max)
+    {
+        if (revision >= max)
+            return max;
+        while (!isRevisionAvailable(revision))
+        {
+            log("Revision:" + revision + " is not available! Try to fetch " + ++revision);
+        }
+        return revision;
+    }
+
+    public long getLatestRevision() throws SVNException
+    {
+        return repository.getLatestRevision();
     }
 
     public void handleSvnEnvComparison(SvnInfoBean svnInfoBean)

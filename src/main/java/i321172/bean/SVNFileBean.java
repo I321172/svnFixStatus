@@ -7,6 +7,7 @@ public class SVNFileBean
 {
     private String       className;
     private SvnInfoBean  svnInfo;
+    private String       copyPath;
     private List<String> content = new ArrayList<String>();
 
     public SVNFileBean(String className)
@@ -42,6 +43,16 @@ public class SVNFileBean
     public void addContent(String content)
     {
         this.content.add(content);
+    }
+
+    public String getCopyPath()
+    {
+        return copyPath;
+    }
+
+    public void setCopyPath(String copyPath)
+    {
+        this.copyPath = copyPath;
     }
 
 }

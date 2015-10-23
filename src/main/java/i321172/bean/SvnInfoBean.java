@@ -10,6 +10,7 @@ public class SvnInfoBean
     private long                   revision;
     private String                 author;
     private String                 createDate;
+    private char                   type;
     private String                 comment;
     private List<SvnEnvComparison> svnEnvComparison = new ArrayList<SvnEnvComparison>();
     private boolean                valuable;
@@ -19,11 +20,12 @@ public class SvnInfoBean
 
     }
 
-    public SvnInfoBean(long revision, String author, String createDate)
+    public SvnInfoBean(long revision, String author, String createDate, char type)
     {
         setRevision(revision);
         setAuthor(author);
         setCreateDate(createDate);
+        setType(type);
     }
 
     public long getRevision()
@@ -112,6 +114,26 @@ public class SvnInfoBean
     public boolean isValuable()
     {
         return valuable;
+    }
+
+    public String getType()
+    {
+        switch (type)
+        {
+            case 'A':
+                return "Add";
+            case 'M':
+                return "Modify";
+            case 'D':
+                return "Delete";
+            default:
+                return "Unknown";
+        }
+    }
+
+    public void setType(char type)
+    {
+        this.type = type;
     }
 
 }

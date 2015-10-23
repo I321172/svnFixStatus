@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LogPointCut
 {
-    @Pointcut(value = "execution(* *.svn.SVNUtils.check*(..)) && args(param)")
+    @Pointcut(value = "execution(* *..svn.SVNUtil.check*(..)) && args(param)")
     public void logSvnAction(long param)
     {}
 
@@ -22,6 +22,10 @@ public class LogPointCut
 
     @Pointcut(value = "execution(* *.web.Sche*.refreshEnv*())")
     public void logScheduleTaskFetchEnv()
+    {}
+
+    @Pointcut(value = "execution(* *..svn.SVNUtil.fetchSVNBasic*(..))")
+    public void logSvnStoreDBAction()
     {}
 
 }

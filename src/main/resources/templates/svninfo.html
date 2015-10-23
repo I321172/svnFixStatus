@@ -2,11 +2,27 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <title>SVN Info</title>
-<link rel="stylesheet" href="/css/svn.css" th:href="@{/css/svn.css}" />
+<link rel="stylesheet" href="/css/svn.css" th:href="@{/css/svninfo.css}" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
 </body>
-<h5>Check SVN checkIn History</h5>
-<p class="bg" />
+
+<h3 th:text="'Check In History for '+${author}+' Since '+${start}">Check
+	SVN checkIn History</h3>
+<p class="bg" th:text="'List total '+${size}+' Files below: '">List:</p>
+
+<table th:each="svnFile:${svnList}" border="1">
+	<tr th:attr="isEven=(${svnFileStat.count} % 2 == 0)">
+		<td colspan='4' class='long' th:text="'File: '+${svnFile.className}"></td>
+	</tr>
+	<tr>
+		<td class='author' th:text="'Author: '+${svnFile.svnInfo.author}"></td>
+		<td class='date'
+			th:text="'CreateDate: '+${svnFile.svnInfo.createDate}"></td>
+		<td class='revision'
+			th:text="'Revision: '+${svnFile.svnInfo.revision}"></td>
+		<td class='type' th:text="'CheckInType: '+${svnFile.svnInfo.type}"></td>
+	</tr>
+</table>
 </html>

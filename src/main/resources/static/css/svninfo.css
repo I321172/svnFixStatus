@@ -1,0 +1,19 @@
+table {
+	table-layout: fixed;
+	word-break:break-all;
+	text-align: left;
+	width: 90%;
+	margin-bottom:10px;
+}
+
+p.bg {
+	background-color: #a4c2f4;
+}
+
+tr[isEven=true]{
+	background-color: #808080;
+}
+
+tr[isEven=false]{
+	background-color: #7FA9A9;
+}

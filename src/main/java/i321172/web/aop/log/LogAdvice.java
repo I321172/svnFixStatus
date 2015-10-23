@@ -25,6 +25,16 @@ public class LogAdvice
         return result;
     }
 
+    @Around(value = "i321172.web.aop.log.LogPointCut.logSvnStoreDBAction()")
+    public void logSvnStoreDBAction(ProceedingJoinPoint pjp) throws Throwable
+    {
+        Object[] obj = pjp.getArgs();
+        log("Start to fetch SVN info from version:" + obj[1] + " to " + obj[2]);
+        long time = getTime();
+        pjp.proceed();
+        log("SVN Fetch Operation takes " + getDuration(time));
+    }
+
     @Before(value = "i321172.web.aop.log.LogPointCut.countSVNVisit()")
     public void countSVNVisit()
     {
@@ -51,7 +61,7 @@ public class LogAdvice
     private String getDuration(long start)
     {
         long dur = (getTime() - start) / 1000;
-        return dur + " seconds";
+        return dur / 60 + " minutes and " + dur % 60 + " seconds";
     }
 
     private void log(String msg)

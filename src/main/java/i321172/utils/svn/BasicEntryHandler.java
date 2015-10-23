@@ -23,9 +23,24 @@ import org.tmatesoft.svn.core.SVNLogEntryPath;
  */
 public class BasicEntryHandler implements ISVNLogEntryHandler
 {
-    private List<SVNFileBean>       result = new ArrayList<SVNFileBean>();
+    private List<SVNFileBean>       result       = new ArrayList<SVNFileBean>();
     private Date                    startDate;
-    private static SimpleDateFormat sdf    = new SimpleDateFormat("yyyy-MM-dd");
+    private Date                    endDate;
+    private static String[]         subPackage   = {
+            "V4/branches/offshore/uitests.purewebdriver/src/java/com/successfactors/aaf/tests/system/",
+            "V4/branches/offshore/uitests.purewebdriver/src/java/com/successfactors/aaf/tests/systemUltra",
+            "V4/branches/offshore/uitests.purewebdriver/src/java/com/successfactors/saf/tests/systemUltra/regression",
+            "V4/branches/offshore/uitests.purewebdriver/src/java/com/successfactors/saf/tests/systemUltra/sanity",
+            "V4/branches/offshore/uitests.purewebdriver/src/java/com/successfactors/saf/tests/system/regression",
+            "V4/branches/offshore/uitests.purewebdriver/src/java/com/successfactors/saf/tests/system/sanity" };
+    private String                  fileRegex    = "PLT.*.java";
+    /**
+     * True: Check in File must in the subPackage
+     */
+    private boolean                 verifyFolder = false;
+    private static SimpleDateFormat sdf          = new SimpleDateFormat("yyyyMMdd");
+    private static SimpleDateFormat sdfo         = new SimpleDateFormat("yyyy-MM-dd");
+    private static SimpleDateFormat sdfdb        = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public BasicEntryHandler()
     {
@@ -40,7 +55,7 @@ public class BasicEntryHandler implements ISVNLogEntryHandler
     @Override
     public void handleLogEntry(SVNLogEntry logEntry) throws SVNException
     {
-        if (logEntry.getDate().after(startDate) && logEntryCondition(logEntry))
+        if (dateCondition(logEntry.getDate()) && logEntryCondition(logEntry))
         {
             Map<String, SVNLogEntryPath> map = logEntry.getChangedPaths();
             if (map != null && map.size() > 0)
@@ -48,15 +63,60 @@ public class BasicEntryHandler implements ISVNLogEntryHandler
                 for (String key : map.keySet())
                 {
                     SVNLogEntryPath entry = map.get(key);
-                    if (entry.getPath().matches(".*\\.java") && checkInFileCondition(entry))
+                    if (checkInFileCondition(entry))
                     {
                         SVNFileBean svnFile = new SVNFileBean(entry.getPath());
-                        svnFile.setSvnInfo(new SvnInfoBean(logEntry.getRevision(), logEntry.getAuthor(), logEntry
-                                .getDate().toString()));
+                        svnFile.setSvnInfo(new SvnInfoBean(logEntry.getRevision(), logEntry.getAuthor(), sdfdb
+                                .format(logEntry.getDate()), entry.getType()));
                         result.add(svnFile);
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Should after beginDate and before endDate
+     * 
+     * @return
+     * @throws ParseException
+     */
+    private boolean dateCondition(Date svnDate)
+    {
+        return svnDate.after(getStartDate()) && svnDate.before(getEndDate());
+    }
+
+    private boolean fileNameCondition(SVNLogEntryPath entry)
+    {
+        String path = entry.getPath();
+        boolean result = false;
+        if (isVerifyFolder())
+        {
+            result = isInPackage(path);
+            if (!result)
+            {
+                return result;
+            }
+        }
+        path = path.substring(path.lastIndexOf("/") + 1);
+        result = path.matches(getFileRegex());
+        return result;
+    }
+
+    private boolean isInPackage(String path)
+    {
+        if (subPackage == null || subPackage.length == 0)
+        {
+            // not check
+            return true;
+        } else
+        {
+            for (String pack : subPackage)
+            {
+                if (path.contains(pack))
+                    return true;
+            }
+            return false;
         }
     }
 
@@ -78,7 +138,7 @@ public class BasicEntryHandler implements ISVNLogEntryHandler
      */
     protected boolean checkInFileCondition(SVNLogEntryPath entry)
     {
-        return true;
+        return fileNameCondition(entry);
     }
 
     public List<SVNFileBean> getResultList()
@@ -86,23 +146,85 @@ public class BasicEntryHandler implements ISVNLogEntryHandler
         return result;
     }
 
-    public Date getStartDate() throws ParseException
+    public void clearResultList()
+    {
+        result.clear();
+    }
+
+    private Date getStartDate()
     {
         if (startDate == null)
         {
-            setStartDate("2015-01-01");
+            try
+            {
+                setStartDate("20120101");
+            } catch (ParseException e)
+            {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
         return startDate;
     }
 
+    private Date getEndDate()
+    {
+        return (endDate != null) ? endDate : new Date();
+    }
+
     public String getStartDateString() throws ParseException
     {
-        return sdf.format(getStartDate());
+        return sdfo.format(getStartDate());
+    }
+
+    public String getEndDateString()
+    {
+        return sdfo.format(getEndDate());
     }
 
     public void setStartDate(String startDate) throws ParseException
     {
         this.startDate = sdf.parse(startDate);
+    }
+
+    public void setEndDate(String endDate) throws ParseException
+    {
+        this.endDate = sdf.parse(endDate);
+    }
+
+    public String getFileRegex()
+    {
+        return fileRegex;
+    }
+
+    public void setFileRegex(String fileRegex)
+    {
+        this.fileRegex = fileRegex;
+    }
+
+    public String[] getSubPackage()
+    {
+        return subPackage;
+    }
+
+    public void setSubPackage(String[] packages)
+    {
+        subPackage = packages;
+    }
+
+    public boolean isVerifyFolder()
+    {
+        return verifyFolder;
+    }
+
+    /**
+     * True: Check in File must in the subPackage
+     * 
+     * @param verifyFolder
+     */
+    public void setVerifyFolder(boolean verifyFolder)
+    {
+        this.verifyFolder = verifyFolder;
     }
 
 }

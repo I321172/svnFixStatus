@@ -1,10 +1,10 @@
 package i321172.web;
 
 import i321172.bean.SvnInfoBean;
-import i321172.utils.DBUtil;
 import i321172.utils.HttpClientUtil;
+import i321172.utils.dao.DBUtil;
 import i321172.utils.svn.AddEntryHandler;
-import i321172.utils.svn.SVNUtils;
+import i321172.utils.svn.SVNUtil;
 import i321172.web.aop.log.LogAdvice;
 
 import java.util.regex.Matcher;
@@ -40,13 +40,18 @@ public class RequestController
 
     @RequestMapping(value = "/show/svn")
     public String showSvnInfo(@RequestParam(value = "author", defaultValue = "lguan") String author,
-            @RequestParam(value = "end", defaultValue = "-1") String end, @RequestParam(value = "after") String begin,
-            Model model) throws Exception
+            @RequestParam(value = "before", defaultValue = "None") String end,
+            @RequestParam(value = "after") String begin, Model model) throws Exception
     {
-        SVNUtils svnUtil = MyApplicationContext.context.getBean(SVNUtils.class);
+        SVNUtil svnUtil = MyApplicationContext.getBean(SVNUtil.class);
         AddEntryHandler handler = new AddEntryHandler(author, begin);
-        svnUtil.getSVNBasicLogEntry(convertVersion(end), handler);
+        if (!end.equals("None"))
+            handler.setEndDate(end);
+        svnUtil.fetchSVNLogEntry(handler);
         model.addAttribute("svnList", handler.getResultList());
+        model.addAttribute("author", author);
+        model.addAttribute("start", begin);
+        model.addAttribute("size", handler.getResultList().size());
         return "svninfo";
     }
 
@@ -68,7 +73,7 @@ public class RequestController
     @RequestMapping(value = "/refresh/conn")
     public String refreshConnect(Model model) throws Exception
     {
-        DBUtil util = MyApplicationContext.context.getBean("dbUtil", DBUtil.class);
+        DBUtil util = MyApplicationContext.getBean("dbUtil", DBUtil.class);
         util.releaseConnectionPool();
         model.addAttribute("result", "Connection All Closed! Connection Pool Refreshed!");
         return "result";
@@ -77,7 +82,7 @@ public class RequestController
     @RequestMapping(value = "/show/status")
     public String showRequestStatus(Model model)
     {
-        LogAdvice advice = MyApplicationContext.context.getBean("logAdvice", LogAdvice.class);
+        LogAdvice advice = MyApplicationContext.getBean("logAdvice", LogAdvice.class);
         String msg = "SVN Fix Status Visit Count: " + advice.getSvnCount();
         model.addAttribute("result", msg);
         return "result";
@@ -86,7 +91,7 @@ public class RequestController
     @RequestMapping(value = "/show/compile")
     public String fetchCompileError(@RequestParam(value = "url") String url, Model model) throws Exception
     {
-        HttpClientUtil httpClient = MyApplicationContext.context.getBean(HttpClientUtil.class);
+        HttpClientUtil httpClient = MyApplicationContext.getBean(HttpClientUtil.class);
         String response = httpClient.fetchWeb(url, false);
         String result = null;
         String success = "BUILD SUCCESSFUL";
@@ -103,7 +108,7 @@ public class RequestController
 
     private boolean refreshTask()
     {
-        ScheduledTasks tasks = MyApplicationContext.context.getBean(ScheduledTasks.class);
+        ScheduledTasks tasks = MyApplicationContext.getBean(ScheduledTasks.class);
         try
         {
             tasks.refreshEnvSFVersion();
@@ -117,10 +122,10 @@ public class RequestController
 
     private SvnInfoBean checkSVNFix(String checkInVersion)
     {
-        SVNUtils svnUtil = MyApplicationContext.context.getBean(SVNUtils.class);
+        SVNUtil svnUtil = MyApplicationContext.getBean(SVNUtil.class);
         long version = convertVersion(checkInVersion);
 
-        CacheData cache = MyApplicationContext.context.getBean("cacheData", CacheData.class);
+        CacheData cache = MyApplicationContext.getBean("cacheData", CacheData.class);
         SvnInfoBean svnInfo = cache.getStoredSvnInfo(version);
         if (svnInfo == null)
         {
@@ -146,7 +151,7 @@ public class RequestController
 
     private long convertVersion(String checkInVersion)
     {
-        if (checkInVersion.matches("\\d+"))
+        if (checkInVersion.matches("-?\\d+"))
         {
             return Long.parseLong(checkInVersion);
         } else

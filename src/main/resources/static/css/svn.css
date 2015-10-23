@@ -1,5 +1,6 @@
 table {
 	text-align: left;
+	table-layout: fixed;
 }
 
 td {
@@ -31,3 +32,4 @@ table.NotFixed {
 table.NONE {
 	background-color: yellow;
 }
+

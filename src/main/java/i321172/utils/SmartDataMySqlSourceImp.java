@@ -15,7 +15,7 @@ public class SmartDataMySqlSourceImp extends MysqlDataSource implements SmartDat
 {
     private int      point    = 0;
     private int      count    = 0;
-    private int      maxCount = 100;
+    private int      maxCount = 600;
     List<Connection> conns    = new ArrayList<Connection>();
 
     public java.sql.Connection getConnection() throws SQLException

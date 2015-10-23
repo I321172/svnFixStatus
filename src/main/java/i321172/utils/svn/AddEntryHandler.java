@@ -26,7 +26,7 @@ public class AddEntryHandler extends BasicEntryHandler
 
     protected boolean checkInFileCondition(SVNLogEntryPath entry)
     {
-        return entry.getType() == 'A';
+        return super.checkInFileCondition(entry) && entry.getType() == 'A' && entry.getCopyPath() == null;
     }
 
     public String getAuthor()
