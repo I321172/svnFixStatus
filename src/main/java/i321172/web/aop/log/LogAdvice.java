@@ -21,7 +21,8 @@ public class LogAdvice
         log("Start to fetch SVN info for version:" + param);
         long start = getTime();
         Object result = pjp.proceed();
-        log("SVN action takes " + getDuration(start));
+        log("SVN Operation Success which takes " + getDuration(start) + " on method ["
+                + pjp.getSignature().toShortString() + "]");
         return result;
     }
 
@@ -29,10 +30,23 @@ public class LogAdvice
     public void logSvnStoreDBAction(ProceedingJoinPoint pjp) throws Throwable
     {
         Object[] obj = pjp.getArgs();
-        log("Start to fetch SVN info from version:" + obj[1] + " to " + obj[2]);
+        if (obj.length >= 3)
+            log("Start to fetch SVN info from version:" + obj[1] + " to " + obj[2]);
         long time = getTime();
         pjp.proceed();
-        log("SVN Fetch Operation takes " + getDuration(time));
+        log("SVN Operation Success which takes " + getDuration(time) + " on method ["
+                + pjp.getSignature().toShortString() + "]");
+    }
+
+    @Around(value = "i321172.web.aop.log.LogPointCut.logHttpDuration(url)", argNames = "url")
+    public Object logHttpDuration(ProceedingJoinPoint pjp, String url) throws Throwable
+    {
+        log("Start to fetch Http Info on " + url);
+        long start = getTime();
+        Object result = pjp.proceed();
+        log("HTTP Operation Success which takes " + getDuration(start) + " on method ["
+                + pjp.getSignature().toShortString() + "]");
+        return result;
     }
 
     @Before(value = "i321172.web.aop.log.LogPointCut.countSVNVisit()")

@@ -46,11 +46,7 @@ public class HttpClientUtil
 
     public String fetchWeb(String queryUrl, boolean isProxy) throws Exception
     {
-        long start = getTime();
-        StringBuffer msg = new StringBuffer("Fetch info in " + queryUrl);
         String response = this.fetchWeb(queryUrl, isProxy, null);
-        msg.append("HttpClient action takes " + getDuration(start));
-        logger.info(msg.toString());
         return response;
     }
 
@@ -260,16 +256,4 @@ public class HttpClientUtil
     {
         this.methodType = method;
     }
-
-    private long getTime()
-    {
-        return System.currentTimeMillis();
-    }
-
-    private String getDuration(long start)
-    {
-        long dur = (getTime() - start) / 1000;
-        return dur + " seconds";
-    }
-
 }

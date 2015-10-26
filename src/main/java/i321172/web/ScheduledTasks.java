@@ -33,7 +33,7 @@ public class ScheduledTasks
         if (start < max)
         {
             start = svnUtil.getRevisionAvailable(start + 1, max);
-            long end = svnUtil.getRevisionAvailable(start + 500, max);
+            long end = svnUtil.getRevisionAvailable(start + 999, max);
             svnUtil.fetchSVNBasicLogEntry(logHander, start, end);
         }
     }

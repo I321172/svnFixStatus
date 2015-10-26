@@ -2,9 +2,9 @@ package i321172.bean;
 
 public enum EnvEnum
 {
-    Qaautocand("https://qaautocand.sflab.ondemand.com/sf-version.properties", true), QAAUTOCANDTOMCAT(
-            "https://qaautocand-tomcat.lab-rot.ondemand.com/sf-version.properties", true), Qacand(
-            "https://qacand.sflab.ondemand.com/sf-version.properties", true), LastSuccessBuild(
+    QAAUTOCAND("https://qaautocand.sflab.ondemand.com/sf-version.properties", true), QAAUTOCANDTOMCAT(
+            "https://qaautocand-tomcat.lab-rot.ondemand.com/sf-version.properties", true), QACAND(
+            "https://qacand.sflab.ondemand.com/sf-version.properties", true), LASTSUCCESSBUILD(
             "http://jenkins.successfactors.com/job/publish-release-trunk/lastSuccessfulBuild/artifact/sf-version.properties/*view*/",
             false);
 

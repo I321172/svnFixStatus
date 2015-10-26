@@ -85,12 +85,13 @@ public class DBUtil
         }
         if (comment != null)
         {
+            comment = comment.replace("'", "").replace("\\", "SLASH");
             if (comment.length() > 1000)
             {
                 logger.debug("Comment too long for revision:" + revision);
                 comment = comment.substring(0, 999);
             }
-            buff.append(",comment='" + comment.replace("'", "") + "'");
+            buff.append(",comment='" + comment + "'");
         }
         return buff.toString();
     }
