@@ -14,7 +14,7 @@ filename varchar(80),
 create table if not exists revision(
 revision int(12) primary key,
 author varchar(20) not null,
-date date,
+date datetime,
 comment varchar(1000)
 )
 

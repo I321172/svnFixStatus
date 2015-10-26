@@ -1,6 +1,6 @@
 package i321172.web;
 
-import i321172.utils.SmartDataMySqlSourceImp;
+import i321172.utils.dao.SmartDataMySqlSourceImp;
 
 import javax.sql.DataSource;
 

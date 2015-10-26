@@ -3,7 +3,6 @@ package i321172.utils.dao;
 import java.util.List;
 
 import i321172.bean.SVNFileBean;
-import i321172.utils.SmartDataMySqlSourceImp;
 
 import javax.annotation.Resource;
 
@@ -86,6 +85,11 @@ public class DBUtil
         }
         if (comment != null)
         {
+            if (comment.length() > 1000)
+            {
+                logger.debug("Comment too long for revision:" + revision);
+                comment = comment.substring(0, 999);
+            }
             buff.append(",comment='" + comment.replace("'", "") + "'");
         }
         return buff.toString();

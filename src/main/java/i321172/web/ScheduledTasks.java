@@ -22,7 +22,7 @@ public class ScheduledTasks
         }
     }
 
-    @Scheduled(fixedDelay = 300000)
+    @Scheduled(fixedDelay = 10000)
     public void refreshSVNCheckIns() throws Exception
     {
         DBUtil dbUtil = MyApplicationContext.getBean(DBUtil.class);

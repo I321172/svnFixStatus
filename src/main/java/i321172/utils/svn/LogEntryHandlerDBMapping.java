@@ -21,23 +21,19 @@ public class LogEntryHandlerDBMapping implements ISVNLogEntryHandler
     public void handleLogEntry(SVNLogEntry logEntry) throws SVNException
     {
         Map<String, SVNLogEntryPath> map = logEntry.getChangedPaths();
-        boolean isValue = false;
+
         if (map != null && map.size() > 0)
         {
+            getDBUtil().insertIntoRevision(logEntry.getRevision(), logEntry.getAuthor(),
+                    sdfdb.format(logEntry.getDate()), logEntry.getMessage());
             for (String key : map.keySet())
             {
                 SVNLogEntryPath entry = map.get(key);
                 if (key.matches(".*.java"))
                 {
-                    isValue = true;
                     getDBUtil().insertIntoFileInfo(entry.getPath(), logEntry.getRevision(), getType(entry.getType()),
                             entry.getCopyPath());
                 }
-            }
-            if (isValue)
-            {
-                getDBUtil().insertIntoRevision(logEntry.getRevision(), logEntry.getAuthor(),
-                        sdfdb.format(logEntry.getDate()), logEntry.getMessage());
             }
         }
     }

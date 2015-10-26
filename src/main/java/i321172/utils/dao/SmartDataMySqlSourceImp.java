@@ -1,64 +1,68 @@
-package i321172.utils;
+package i321172.utils.dao;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.jdbc.datasource.SmartDataSource;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 public class SmartDataMySqlSourceImp extends MysqlDataSource implements SmartDataSource
 {
-    private int      point    = 0;
-    private int      count    = 0;
-    private int      maxCount = 600;
-    List<Connection> conns    = new ArrayList<Connection>();
+    private Logger           logger   = Logger.getLogger(SmartDataMySqlSourceImp.class);
+    private int              point    = 0;
+    private int              count    = 0;
+    private int              maxCount = 500;
+    Map<Integer, Connection> conns    = new HashMap<Integer, Connection>();
 
-    public java.sql.Connection getConnection() throws SQLException
+    public Connection getConnection() throws SQLException
     {
         Connection con = null;
         if (count < maxCount)
         {
             con = super.getConnection();
-            conns.add(con);
-            count++;
+            conns.put(count++, con);
         }
         point = point % maxCount;
-        return conns.get(point++);
+        con = conns.get(point++);
+        if (con.isClosed())
+        {
+            con = super.getConnection();
+            conns.put(point - 1, con);
+            log("Connection is closed at point:" + (point - 1) + ", Get a new one");
+        }
+        return con;
+    }
+
+    private void log(String msg)
+    {
+        logger.info(msg);
     }
 
     public void closeAllConnectoins()
     {
-        for (Connection con : conns)
+        for (int i : conns.keySet())
         {
             try
             {
-                if (!con.isClosed())
+                if (!conns.get(i).isClosed())
                 {
-                    con.close();
+                    conns.get(i).close();
                 }
             } catch (Exception e)
             {
                 e.printStackTrace();
             }
         }
-        conns.clear();
+        conns = new HashMap<Integer, Connection>();
         point = 0;
         count = 0;
     }
 
     private static final long serialVersionUID = 1L;
-
-    @Override
-    public Logger getParentLogger() throws SQLFeatureNotSupportedException
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException

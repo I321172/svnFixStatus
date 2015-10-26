@@ -32,7 +32,7 @@ public class SvnEnvComparison
     public void setPath(String path)
     {
         this.path = path;
-        feature = path.split("/")[4];
+        feature = path.split("/").length > 5 ? path.split("/")[4] : path;
     }
 
     public List<EnvActualInfo> getEnvInfo()
