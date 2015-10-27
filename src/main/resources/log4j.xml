@@ -14,10 +14,10 @@
 		<param name="threshold" value="debug" />
 		<param name="File" value="applog/log.txt" />
 		<param name="Append" value="true" />
-		<param name="MaxBackupIndex" value="10" />
-		<param name="MaxFileSize" value="5MB" />
+		<param name="MaxBackupIndex" value="2" />
+		<param name="MaxFileSize" value="50MB" />
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%p (%c:%L)- %m%n" />
+			<param name="ConversionPattern" value="%p %d{dd HH:mm:ss,SSS\}(%c:%L)- %m%n" />
 		</layout>
 	</appender>
 

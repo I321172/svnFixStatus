@@ -114,6 +114,11 @@ public class DBUtil
     {
         String sql = "select max(revision) from revision";
         return queryForLong(sql);
-
     }
+
+    public List<SVNFileBean> getSVNInfoList()
+    {
+        return null;
+    }
+
 }

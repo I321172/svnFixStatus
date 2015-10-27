@@ -22,7 +22,12 @@ public class ScheduledTasks
         }
     }
 
-    @Scheduled(fixedDelay = 10000)
+    /**
+     * Provided when DB data is empty, start to fetch data from SVN
+     * 
+     * @throws Exception
+     */
+    // @Scheduled(fixedDelay = 5000)
     public void refreshSVNCheckIns() throws Exception
     {
         DBUtil dbUtil = MyApplicationContext.getBean(DBUtil.class);
@@ -33,8 +38,28 @@ public class ScheduledTasks
         if (start < max)
         {
             start = svnUtil.getRevisionAvailable(start + 1, max);
-            long end = svnUtil.getRevisionAvailable(start + 999, max);
+            long end = svnUtil.getRevisionAvailable(start + 499, max);
             svnUtil.fetchSVNBasicLogEntry(logHander, start, end);
+        }
+    }
+
+    /**
+     * Regular fetch after DB data is near latest
+     * 
+     * @throws Exception
+     */
+    @Scheduled(fixedDelay = 3600000)
+    public void refreshSVNLatestCheckIns() throws Exception
+    {
+        DBUtil dbUtil = MyApplicationContext.getBean(DBUtil.class);
+        SVNUtil svnUtil = MyApplicationContext.getBean(SVNUtil.class);
+        LogEntryHandlerDBMapping logHander = MyApplicationContext.getBean(LogEntryHandlerDBMapping.class);
+        long start = dbUtil.getLatestRevision();
+        long max = svnUtil.getLatestRevision();
+        if (start < max)
+        {
+            start = svnUtil.getRevisionAvailable(start + 1, max);
+            svnUtil.fetchSVNBasicLogEntry(logHander, start, max);
         }
     }
 

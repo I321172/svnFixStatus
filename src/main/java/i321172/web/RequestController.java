@@ -1,5 +1,6 @@
 package i321172.web;
 
+import i321172.bean.SVNFileBean;
 import i321172.bean.SvnInfoBean;
 import i321172.utils.HttpClientUtil;
 import i321172.utils.dao.DBUtil;
@@ -7,6 +8,7 @@ import i321172.utils.svn.AddEntryHandler;
 import i321172.utils.svn.SVNUtil;
 import i321172.web.aop.log.LogAdvice;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,20 +40,38 @@ public class RequestController
         return "svnfix";
     }
 
-    @RequestMapping(value = "/show/svn")
-    public String showSvnInfo(@RequestParam(value = "author", defaultValue = "lguan") String author,
+    @RequestMapping(value = "/show/svn/now")
+    public String showSvnInfoFromSVN(@RequestParam(value = "author", defaultValue = "lguan") String author,
             @RequestParam(value = "before", defaultValue = "None") String end,
             @RequestParam(value = "after") String begin, Model model) throws Exception
     {
         SVNUtil svnUtil = MyApplicationContext.getBean(SVNUtil.class);
         AddEntryHandler handler = new AddEntryHandler(author, begin);
         if (!end.equals("None"))
+        {
             handler.setEndDate(end);
+        }
         svnUtil.fetchSVNLogEntry(handler);
         model.addAttribute("svnList", handler.getResultList());
         model.addAttribute("author", author);
         model.addAttribute("start", begin);
+        model.addAttribute("end", end.equals("None") ? "Now" : end);
         model.addAttribute("size", handler.getResultList().size());
+        return "svninfo";
+    }
+
+    @RequestMapping(value = "/show/svn")
+    public String showSvnInfoFromDB(@RequestParam(value = "author", defaultValue = "lguan") String author,
+            @RequestParam(value = "before", defaultValue = "None") String end,
+            @RequestParam(value = "after") String begin, Model model) throws Exception
+    {
+        DBUtil dbUtil = MyApplicationContext.getBean(DBUtil.class);
+        List<SVNFileBean> resultList = dbUtil.getSVNInfoList();
+        model.addAttribute("svnList", resultList);
+        model.addAttribute("author", author);
+        model.addAttribute("start", begin);
+        model.addAttribute("end", end.equals("None") ? "Now" : end);
+        model.addAttribute("size", resultList.size());
         return "svninfo";
     }
 
@@ -70,7 +90,7 @@ public class RequestController
         return "result";
     }
 
-    @RequestMapping(value = "/refresh/conn")
+    @RequestMapping(value = "/close/conn")
     public String refreshConnect(Model model) throws Exception
     {
         DBUtil util = MyApplicationContext.getBean("dbUtil", DBUtil.class);
@@ -92,15 +112,15 @@ public class RequestController
     public String fetchCompileError(@RequestParam(value = "url") String url, Model model) throws Exception
     {
         HttpClientUtil httpClient = MyApplicationContext.getBean(HttpClientUtil.class);
+        url = getCompileUrl(url);
         String response = httpClient.fetchWeb(url, false);
         String result = null;
-        String success = "BUILD SUCCESSFUL";
-        if (response.contains(success))
+        if (response.contains("BUILD SUCCESSFUL"))
         {
-            result = success + " on " + url;
+            result = "BUILD SUCCESSFUL on " + url;
         } else
         {
-            result = fetchCompileError(response);
+            result = "BUILD FAILURE on " + url + "<br/>" + fetchCompileError(response);
         }
         model.addAttribute("utext", result);
         return "result";
@@ -118,6 +138,13 @@ public class RequestController
             return false;
         }
         return true;
+    }
+
+    private String getCompileUrl(String url)
+    {
+        if (!url.startsWith("http"))
+            url = "http://autobuildmaster.mo.sap.corp:8080/job/Compile_uitests.purewebdriver_tree/" + url + "/console";
+        return url;
     }
 
     private SvnInfoBean checkSVNFix(String checkInVersion)
