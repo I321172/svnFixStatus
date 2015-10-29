@@ -28,18 +28,13 @@ public class SmartDataMySqlSourceImp extends MysqlDataSource implements SmartDat
         }
         point = point % maxCount;
         con = conns.get(point++);
-        if (con.isClosed())
-        {
-            con = super.getConnection();
-            conns.put(point - 1, con);
-            log("Connection is closed at point:" + (point - 1) + ", Get a new one");
-        }
+        log("Get a new connection in the pool at point: " + (point - 1));
         return con;
     }
 
     private void log(String msg)
     {
-        logger.info(msg);
+        logger.debug(msg);
     }
 
     public void closeAllConnectoins()
@@ -83,6 +78,11 @@ public class SmartDataMySqlSourceImp extends MysqlDataSource implements SmartDat
     {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    public int getMaxCount()
+    {
+        return maxCount;
     }
 
 }

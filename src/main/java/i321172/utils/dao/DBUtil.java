@@ -3,6 +3,7 @@ package i321172.utils.dao;
 import java.util.List;
 
 import i321172.bean.SVNFileBean;
+import i321172.web.MyApplicationContext;
 
 import javax.annotation.Resource;
 
@@ -20,14 +21,14 @@ public class DBUtil
 
     public void releaseConnectionPool()
     {
-        ((SmartDataMySqlSourceImp) jdbc.getDataSource()).closeAllConnectoins();
+        SmartDataMySqlSourceImp dataSource = MyApplicationContext.getBean(SmartDataMySqlSourceImp.class);
+        dataSource.closeAllConnectoins();
     }
 
     public long getNearestRevision(String begin)
     {
-        String sql = "select revision from revision where to_days(date)-to_days(?)<10 and to_days(date)-to_days(?)>0 order by date desc limit 1";
-        return queryForLong(sql, begin, begin);
-
+        String sql = "select revision from revision where to_days(date)-to_days(?)<0 order by date desc limit 1";
+        return queryForLong(sql, begin);
     }
 
     public void execute(String sql)
@@ -116,9 +117,22 @@ public class DBUtil
         return queryForLong(sql);
     }
 
-    public List<SVNFileBean> getSVNInfoList()
+    public List<SVNFileBean> getNewAddedSVNInfoList(String author, String begin, String end)
     {
-        return null;
+        String sql = "select r.revision,r.author,r.date,r.comment,f.filepath,f.type,f.copypath from revision as r inner join fileinfo as f on r.revision=f.revision where r.author=? and f.type='Add' and  (f.copypath='null' or f.copypath is null) and to_days(r.date)>to_days(?)";
+        if (end != null && !end.equals("Now"))
+            sql += " and to_days(f.date)<to_days('" + end + "')";
+        sql += " order by r.date desc";
+        return jdbc.query(sql, new Object[] { author, begin }, new SVNMapper());
+    }
+
+    public void activeConnections()
+    {
+        SmartDataMySqlSourceImp dataSource = MyApplicationContext.getBean(SmartDataMySqlSourceImp.class);
+        for (int i = 0; i < dataSource.getMaxCount(); i++)
+        {
+            execute("show global variables like 'wait_timeout'");
+        }
     }
 
 }

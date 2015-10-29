@@ -66,11 +66,12 @@ public class RequestController
             @RequestParam(value = "after") String begin, Model model) throws Exception
     {
         DBUtil dbUtil = MyApplicationContext.getBean(DBUtil.class);
-        List<SVNFileBean> resultList = dbUtil.getSVNInfoList();
+        end = end.equals("None") ? "Now" : end;
+        List<SVNFileBean> resultList = dbUtil.getNewAddedSVNInfoList(author, begin, end);
         model.addAttribute("svnList", resultList);
         model.addAttribute("author", author);
         model.addAttribute("start", begin);
-        model.addAttribute("end", end.equals("None") ? "Now" : end);
+        model.addAttribute("end", end);
         model.addAttribute("size", resultList.size());
         return "svninfo";
     }

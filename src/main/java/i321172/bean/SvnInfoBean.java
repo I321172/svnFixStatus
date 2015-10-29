@@ -136,4 +136,9 @@ public class SvnInfoBean
         this.type = type;
     }
 
+    public void setType(String type)
+    {
+        this.type = type.charAt(0);
+    }
+
 }

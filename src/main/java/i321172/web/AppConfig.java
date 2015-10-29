@@ -27,8 +27,8 @@ public class AppConfig
     private Logger logger = Logger.getLogger(getClass());
 
     @Bean(name = "dataSource")
-    public DataSource getMysqlSource(@Value("${mysql.url}") String url, @Value("${mysql.user}") String user,
-            @Value("${mysql.password}") String password)
+    public SmartDataMySqlSourceImp getMysqlSource(@Value("${mysql.url}") String url,
+            @Value("${mysql.user}") String user, @Value("${mysql.password}") String password)
     {
         SmartDataMySqlSourceImp dataSource = new SmartDataMySqlSourceImp();
         dataSource.setUrl(url);

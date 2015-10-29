@@ -3,6 +3,7 @@
 <head>
 <title>SVN Info</title>
 <link rel="stylesheet" href="/css/svn.css" th:href="@{/css/svninfo.css}" />
+<script th:src="@{/js/svninfo.js}"></script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
@@ -11,7 +12,11 @@
 <h3
 	th:text="'Check In History for '+${author}+' between '+${start}+' to '+${end}">Check
 	SVN checkIn History</h3>
-<p class="bg" th:text="'List total '+${size}+' Files below: '">List:</p>
+<input id="filter" type="text" onkeydown="filterEvent(event)"
+	placeholder="Filter Name" />
+<input type="button" onclick="filter()" value="Submit" />
+<input type="button" onclick="reset()" value="Reset" />
+<p class="bg" th:text="'List Total '+${size}+' File(s) below: '">List:</p>
 
 <table th:each="svnFile:${svnList}" border="1">
 	<tr th:attr="isEven=(${svnFileStat.count} % 2 == 0)">

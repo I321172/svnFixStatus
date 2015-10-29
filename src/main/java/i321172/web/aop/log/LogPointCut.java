@@ -28,8 +28,12 @@ public class LogPointCut
     public void logScheduleTaskFetchEnv()
     {}
 
-    @Pointcut(value = "execution(* *..svn.SVNUtil.fetchSVNBasic*(..))")
-    public void logSvnStoreDBAction()
+    @Pointcut(value = "execution(* *..svn.SVNUtil.fetchSVN*(..))")
+    public void logFetchSVNAction()
+    {}
+
+    @Pointcut(value = "execution(* *..dao.DBUtil.getNewAddedSVNInfoList(..))")
+    public void logFetchDBSVNInfo()
     {}
 
 }

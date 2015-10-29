@@ -23,6 +23,20 @@ public class ScheduledTasks
     }
 
     /**
+     * Each connection timeout is 8 hours (28800 s), throw
+     * CommunicationsException: The last packet successfully received from the
+     * server was xxx milliseconds ago if two action exceed 8 hours
+     * 
+     * @throws Exception
+     */
+    @Scheduled(fixedDelay = 28000000)
+    public void refreshDBConnection() throws Exception
+    {
+        DBUtil dbUtil = MyApplicationContext.getBean(DBUtil.class);
+        dbUtil.activeConnections();
+    }
+
+    /**
      * Provided when DB data is empty, start to fetch data from SVN
      * 
      * @throws Exception
@@ -62,5 +76,4 @@ public class ScheduledTasks
             svnUtil.fetchSVNBasicLogEntry(logHander, start, max);
         }
     }
-
 }

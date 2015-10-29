@@ -1,0 +1,1 @@
+create index rev on revision (author,date);
