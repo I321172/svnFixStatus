@@ -86,6 +86,7 @@ public class HttpClientUtil
         log("HttpClient executed with status: " + response.getStatusLine().getStatusCode());
 
         String resposne = EntityUtils.toString(response.getEntity());
+        log("HttpClient response: " + resposne);
         try
         {
             response.close();

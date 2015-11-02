@@ -117,13 +117,20 @@ public class DBUtil
         return queryForLong(sql);
     }
 
-    public List<SVNFileBean> getNewAddedSVNInfoList(String author, String begin, String end)
+    public List<SVNFileBean> getSVNInfoList(String author, String begin, String end)
     {
-        String sql = "select r.revision,r.author,r.date,r.comment,f.filepath,f.type,f.copypath from revision as r inner join fileinfo as f on r.revision=f.revision where r.author=? and f.type='Add' and  (f.copypath='null' or f.copypath is null) and to_days(r.date)>to_days(?)";
+        return getSVNInfoList(author, begin, end, "type='Add' and (f.copypath is null or f.copy='null')");
+    }
+
+    public List<SVNFileBean> getSVNInfoList(String author, String begin, String end, String externalCondition)
+    {
+        StringBuffer sql = new StringBuffer(
+                "select r.revision,r.author,r.date,r.comment,f.filepath,f.type,f.copypath from revision as r inner join fileinfo as f on r.revision=f.revision where r.author=? and to_days(r.date)>to_days(?)");
         if (end != null && !end.equals("Now"))
-            sql += " and to_days(f.date)<to_days('" + end + "')";
-        sql += " order by r.date desc";
-        return jdbc.query(sql, new Object[] { author, begin }, new SVNMapper());
+            sql.append(" and to_days(r.date)<to_days('" + end + "')");
+        if (externalCondition != null)
+            sql.append(" and " + externalCondition);
+        return jdbc.query(sql.toString(), new Object[] { author, begin }, new SVNMapper());
     }
 
     public void activeConnections()

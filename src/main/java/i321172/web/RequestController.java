@@ -63,11 +63,19 @@ public class RequestController
     @RequestMapping(value = "/show/svn")
     public String showSvnInfoFromDB(@RequestParam(value = "author", defaultValue = "lguan") String author,
             @RequestParam(value = "before", defaultValue = "None") String end,
-            @RequestParam(value = "after") String begin, Model model) throws Exception
+            @RequestParam(value = "after") String begin,
+            @RequestParam(value = "type", defaultValue = "Add") String type, Model model) throws Exception
     {
         DBUtil dbUtil = MyApplicationContext.getBean(DBUtil.class);
+        List<SVNFileBean> resultList;
         end = end.equals("None") ? "Now" : end;
-        List<SVNFileBean> resultList = dbUtil.getNewAddedSVNInfoList(author, begin, end);
+        if (type.equals("Add"))
+        {
+            resultList = dbUtil.getSVNInfoList(author, begin, end);
+        } else
+        {
+            resultList = dbUtil.getSVNInfoList(author, begin, end, null);
+        }
         model.addAttribute("svnList", resultList);
         model.addAttribute("author", author);
         model.addAttribute("start", begin);
