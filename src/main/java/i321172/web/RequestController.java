@@ -86,18 +86,6 @@ public class RequestController
         return "svninfo";
     }
 
-    @RequestMapping(value = "/show/aep")
-    public String fetchAEPRunningJobs(@RequestParam(value = "user", defaultValue = "Null") String username,
-            @RequestParam(value = "module", defaultValue = "Null") String moduleFilter,
-            @RequestParam(value = "status", defaultValue = "Null") String jobStatus,
-            @RequestParam(value = "env", defaultValue = "Null") String envFilter, Model model) throws Exception
-    {
-        AEPUtil aep = MyContext.getBean(AEPUtil.class);
-        String result = aep.fetchAEPJob(username, moduleFilter, jobStatus, envFilter);
-        model.addAttribute("jobs", result);
-        return "aeprun";
-    }
-
     @RequestMapping(value = "/refresh/task")
     public String refreshTask(Model model) throws Exception
     {
