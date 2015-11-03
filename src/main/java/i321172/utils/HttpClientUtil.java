@@ -19,11 +19,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-@Service()
-@Scope("prototype")
+@Service
 public class HttpClientUtil
 {
     private Map<String, String> headers    = new HashMap<String, String>();
@@ -81,7 +79,7 @@ public class HttpClientUtil
         method.setConfig(httpConfig);
         addHeader(method);
         log(methodType + " on [" + url + "]");
-
+        this.revert();
         CloseableHttpResponse response = httpClient.execute(method);
         log("HttpClient executed with status: " + response.getStatusLine().getStatusCode());
 
@@ -170,8 +168,8 @@ public class HttpClientUtil
 
     public String getCookieValue(String url, boolean isProxy, String cookieName) throws Exception
     {
-        Map<String, String> respHeaders = getHttpResponseHeader(url, isProxy);
-        String cookie = respHeaders.get("Cookie");
+        Map<String, String> respHeaders = fetchResponseHeader(url, isProxy);
+        String cookie = respHeaders.get("Set-Cookie");
         if (isNull(cookie))
             return null;
         String result = null;
@@ -182,12 +180,17 @@ public class HttpClientUtil
         return result;
     }
 
-    public Map<String, String> getHttpResponseHeader(String url, boolean isProxy) throws Exception
+    public Map<String, String> fetchResponseHeader(String url) throws Exception
     {
-        return getHttpResponseHeader(url, isProxy, null, true);
+        return fetchResponseHeader(url, true);
     }
 
-    public Map<String, String> getHttpResponseHeader(String url, boolean isProxy, String customProxy,
+    public Map<String, String> fetchResponseHeader(String url, boolean isProxy) throws Exception
+    {
+        return fetchResponseHeader(url, isProxy, null, true);
+    }
+
+    public Map<String, String> fetchResponseHeader(String url, boolean isProxy, String customProxy,
             boolean isDisableRedirect) throws Exception
     {
         CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -196,7 +199,7 @@ public class HttpClientUtil
         method.setConfig(httpConfig);
         addHeader(method);
         log(methodType + " on [" + url + "]");
-
+        this.revert();
         CloseableHttpResponse response = httpClient.execute(method);
         log("HttpClient executed with status: " + response.getStatusLine().getStatusCode());
         return convertResponseHeaders(response.getAllHeaders());
@@ -217,6 +220,7 @@ public class HttpClientUtil
                 headerValue += "; " + header.getValue();
             }
             result.put(name, headerValue);
+            log(name + " = " + headerValue);
         }
         return result;
     }
@@ -256,5 +260,15 @@ public class HttpClientUtil
     public void setMethodType(String method)
     {
         this.methodType = method;
+    }
+
+    /**
+     * For Singleton purpose, remove header/body/method after execute
+     */
+    private void revert()
+    {
+        headers.clear();
+        setHttpEntity(null);
+        setMethodType("Get");
     }
 }

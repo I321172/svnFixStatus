@@ -1,7 +1,7 @@
 package i321172.utils.svn;
 
+import i321172.MyContext;
 import i321172.utils.dao.DBUtil;
-import i321172.web.MyApplicationContext;
 
 import java.text.SimpleDateFormat;
 import java.util.Map;
@@ -40,7 +40,7 @@ public class LogEntryHandlerDBMapping implements ISVNLogEntryHandler
 
     public DBUtil getDBUtil()
     {
-        return MyApplicationContext.getBean(DBUtil.class);
+        return MyContext.getBean(DBUtil.class);
     }
 
     private String getType(char type)

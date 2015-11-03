@@ -1,11 +1,11 @@
 package i321172.utils.svn;
 
+import i321172.MyContext;
 import i321172.bean.EnvEnum;
 import i321172.bean.SvnEnvComparison;
 import i321172.bean.SvnInfoBean;
 import i321172.bean.SvnEnvComparison.EnvActualInfo;
 import i321172.utils.dao.DBUtil;
-import i321172.web.MyApplicationContext;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -76,7 +76,7 @@ public class SVNUtil
      */
     public void fetchSVNLogEntry(BasicEntryHandler handler) throws Exception
     {
-        DBUtil dbUtil = MyApplicationContext.getBean(DBUtil.class);
+        DBUtil dbUtil = MyContext.getBean(DBUtil.class);
         long startRevision = dbUtil.getNearestRevision(handler.getStartDateString());
         long endRevision = dbUtil.getNearestRevision(handler.getEndDateString());
         fetchSVNBasicLogEntry(handler, startRevision, endRevision);

@@ -1,12 +1,14 @@
 package i321172.web;
 
+import i321172.MyContext;
+import i321172.aop.log.LogAdvice;
 import i321172.bean.SVNFileBean;
 import i321172.bean.SvnInfoBean;
+import i321172.utils.AEPUtil;
 import i321172.utils.HttpClientUtil;
 import i321172.utils.dao.DBUtil;
 import i321172.utils.svn.AddEntryHandler;
 import i321172.utils.svn.SVNUtil;
-import i321172.web.aop.log.LogAdvice;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -45,7 +47,7 @@ public class RequestController
             @RequestParam(value = "before", defaultValue = "None") String end,
             @RequestParam(value = "after") String begin, Model model) throws Exception
     {
-        SVNUtil svnUtil = MyApplicationContext.getBean(SVNUtil.class);
+        SVNUtil svnUtil = MyContext.getBean(SVNUtil.class);
         AddEntryHandler handler = new AddEntryHandler(author, begin);
         if (!end.equals("None"))
         {
@@ -66,7 +68,7 @@ public class RequestController
             @RequestParam(value = "after") String begin,
             @RequestParam(value = "type", defaultValue = "Add") String type, Model model) throws Exception
     {
-        DBUtil dbUtil = MyApplicationContext.getBean(DBUtil.class);
+        DBUtil dbUtil = MyContext.getBean(DBUtil.class);
         List<SVNFileBean> resultList;
         end = end.equals("None") ? "Now" : end;
         if (type.equals("Add"))
@@ -85,8 +87,14 @@ public class RequestController
     }
 
     @RequestMapping(value = "/show/aep")
-    public String fetchAEPRunningJobs(Model model)
+    public String fetchAEPRunningJobs(@RequestParam(value = "user", defaultValue = "Null") String username,
+            @RequestParam(value = "module", defaultValue = "Null") String moduleFilter,
+            @RequestParam(value = "status", defaultValue = "Null") String jobStatus,
+            @RequestParam(value = "env", defaultValue = "Null") String envFilter, Model model) throws Exception
     {
+        AEPUtil aep = MyContext.getBean(AEPUtil.class);
+        String result = aep.fetchAEPJob(username, moduleFilter, jobStatus, envFilter);
+        model.addAttribute("jobs", result);
         return "aeprun";
     }
 
@@ -102,7 +110,7 @@ public class RequestController
     @RequestMapping(value = "/close/conn")
     public String refreshConnect(Model model) throws Exception
     {
-        DBUtil util = MyApplicationContext.getBean("dbUtil", DBUtil.class);
+        DBUtil util = MyContext.getBean("dbUtil", DBUtil.class);
         util.releaseConnectionPool();
         model.addAttribute("result", "Connection All Closed! Connection Pool Refreshed!");
         return "result";
@@ -111,7 +119,7 @@ public class RequestController
     @RequestMapping(value = "/show/status")
     public String showRequestStatus(Model model)
     {
-        LogAdvice advice = MyApplicationContext.getBean("logAdvice", LogAdvice.class);
+        LogAdvice advice = MyContext.getBean("logAdvice", LogAdvice.class);
         String msg = "SVN Fix Status Visit Count: " + advice.getSvnCount();
         model.addAttribute("result", msg);
         return "result";
@@ -120,7 +128,7 @@ public class RequestController
     @RequestMapping(value = "/show/compile")
     public String fetchCompileError(@RequestParam(value = "url") String url, Model model) throws Exception
     {
-        HttpClientUtil httpClient = MyApplicationContext.getBean(HttpClientUtil.class);
+        HttpClientUtil httpClient = MyContext.getBean(HttpClientUtil.class);
         url = getCompileUrl(url);
         String response = httpClient.fetchWeb(url, false);
         String result = null;
@@ -137,7 +145,7 @@ public class RequestController
 
     private boolean refreshTask()
     {
-        ScheduledTasks tasks = MyApplicationContext.getBean(ScheduledTasks.class);
+        ScheduledTasks tasks = MyContext.getBean(ScheduledTasks.class);
         try
         {
             tasks.refreshEnvSFVersion();
@@ -158,10 +166,10 @@ public class RequestController
 
     private SvnInfoBean checkSVNFix(String checkInVersion)
     {
-        SVNUtil svnUtil = MyApplicationContext.getBean(SVNUtil.class);
+        SVNUtil svnUtil = MyContext.getBean(SVNUtil.class);
         long version = convertVersion(checkInVersion);
 
-        CacheData cache = MyApplicationContext.getBean("cacheData", CacheData.class);
+        CacheData cache = MyContext.getBean("cacheData", CacheData.class);
         SvnInfoBean svnInfo = cache.getStoredSvnInfo(version);
         if (svnInfo == null)
         {

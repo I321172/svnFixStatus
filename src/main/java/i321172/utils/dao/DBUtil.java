@@ -2,8 +2,8 @@ package i321172.utils.dao;
 
 import java.util.List;
 
+import i321172.MyContext;
 import i321172.bean.SVNFileBean;
-import i321172.web.MyApplicationContext;
 
 import javax.annotation.Resource;
 
@@ -21,7 +21,7 @@ public class DBUtil
 
     public void releaseConnectionPool()
     {
-        SmartDataMySqlSourceImp dataSource = MyApplicationContext.getBean(SmartDataMySqlSourceImp.class);
+        SmartDataMySqlSourceImp dataSource = MyContext.getBean(SmartDataMySqlSourceImp.class);
         dataSource.closeAllConnectoins();
     }
 
@@ -133,9 +133,9 @@ public class DBUtil
         return jdbc.query(sql.toString(), new Object[] { author, begin }, new SVNMapper());
     }
 
-    public void activeConnections()
+    public void getActiveConnections()
     {
-        SmartDataMySqlSourceImp dataSource = MyApplicationContext.getBean(SmartDataMySqlSourceImp.class);
+        SmartDataMySqlSourceImp dataSource = MyContext.getBean(SmartDataMySqlSourceImp.class);
         for (int i = 0; i < dataSource.getMaxCount(); i++)
         {
             execute("show global variables like 'wait_timeout'");

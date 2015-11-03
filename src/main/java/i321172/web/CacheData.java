@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class CacheData
 {
-
+    private String                 aepCookie;
     private Map<Long, SvnInfoBean> storedRevision = new LinkedHashMap<Long, SvnInfoBean>();
 
     public Map<Long, SvnInfoBean> getStoredRevision()
@@ -44,7 +44,7 @@ public class CacheData
         }
     }
 
-    public void removeFirstStoredRevision()
+    private void removeFirstStoredRevision()
     {
         Iterator<Long> ite = storedRevision.keySet().iterator();
         if (ite.hasNext())
@@ -56,6 +56,16 @@ public class CacheData
     public SvnInfoBean getStoredSvnInfo(Long revision)
     {
         return storedRevision.get(revision);
+    }
+
+    public String getAepCookie()
+    {
+        return aepCookie;
+    }
+
+    public void setAepCookie(String aepCookie)
+    {
+        this.aepCookie = aepCookie;
     }
 
 }

@@ -1,4 +1,4 @@
-package i321172.web.aop.log;
+package i321172.aop.log;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -36,4 +36,7 @@ public class LogPointCut
     public void logFetchDBSVNInfo()
     {}
 
+    @Pointcut(value = "execution(* *..*Util.get*(..))")
+    public void logUtilOperation()
+    {}
 }

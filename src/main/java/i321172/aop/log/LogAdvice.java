@@ -1,4 +1,4 @@
-package i321172.web.aop.log;
+package i321172.aop.log;
 
 import i321172.utils.svn.BasicEntryHandler;
 
@@ -17,7 +17,7 @@ public class LogAdvice
     private Logger logger   = Logger.getLogger(getClass());
     private int    svnCount = 0;
 
-    @Around(value = "i321172.web.aop.log.LogPointCut.logSvnAction(param)", argNames = "param")
+    @Around(value = "i321172.aop.log.LogPointCut.logSvnAction(param)", argNames = "param")
     public Object logSvnAction(ProceedingJoinPoint pjp, long param) throws Throwable
     {
         log("Start to fetch SVN info for version:" + param);
@@ -28,7 +28,7 @@ public class LogAdvice
         return result;
     }
 
-    @Around(value = "i321172.web.aop.log.LogPointCut.logFetchSVNAction()")
+    @Around(value = "i321172.aop.log.LogPointCut.logFetchSVNAction()")
     public void logFetchSVNAction(ProceedingJoinPoint pjp) throws Throwable
     {
         Object[] obj = pjp.getArgs();
@@ -53,7 +53,7 @@ public class LogAdvice
                 + pjp.getSignature().toShortString() + "]");
     }
 
-    @Around(value = "i321172.web.aop.log.LogPointCut.logHttpDuration(url)", argNames = "url")
+    @Around(value = "i321172.aop.log.LogPointCut.logHttpDuration(url)", argNames = "url")
     public Object logHttpDuration(ProceedingJoinPoint pjp, String url) throws Throwable
     {
         log("Start to fetch Http Info on " + url);
@@ -64,7 +64,7 @@ public class LogAdvice
         return result;
     }
 
-    @Around(value = "i321172.web.aop.log.LogPointCut.logFetchDBSVNInfo()")
+    @Around(value = "i321172.aop.log.LogPointCut.logFetchDBSVNInfo()")
     public Object logFetchDBSVNInfo(ProceedingJoinPoint pjp) throws Throwable
     {
         Object[] obj = pjp.getArgs();
@@ -77,22 +77,31 @@ public class LogAdvice
         return result;
     }
 
-    @Before(value = "i321172.web.aop.log.LogPointCut.countSVNVisit()")
+    @Before(value = "i321172.aop.log.LogPointCut.countSVNVisit()")
     public void countSVNVisit()
     {
         log("Fetch SVN Fix Status; Count = " + ++svnCount);
     }
 
-    @Before(value = "i321172.web.aop.log.LogPointCut.logScheduleTask()")
+    @Before(value = "i321172.aop.log.LogPointCut.logScheduleTask()")
     public void logScheduleTask()
     {
         log("Start to Execute ScheduledTask!");
     }
 
-    @After(value = "i321172.web.aop.log.LogPointCut.logScheduleTaskFetchEnv()")
+    @After(value = "i321172.aop.log.LogPointCut.logScheduleTaskFetchEnv()")
     public void logScheduleTaskEnv()
     {
         log("All Envirionment Version are fetched!");
+    }
+
+    @Around(value = "i321172.aop.log.LogPointCut.logUtilOperation()")
+    public Object logUtilOperation(ProceedingJoinPoint pjp) throws Throwable
+    {
+        long time = getTime();
+        Object result = pjp.proceed();
+        log("[" + pjp.getSignature().toShortString() + "] takes " + getDuration(time));
+        return result;
     }
 
     private long getTime()
