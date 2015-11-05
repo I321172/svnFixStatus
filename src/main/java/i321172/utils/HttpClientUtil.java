@@ -1,5 +1,6 @@
 package i321172.utils;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -85,14 +86,7 @@ public class HttpClientUtil
 
         String resposne = EntityUtils.toString(response.getEntity());
         log("HttpClient response: " + resposne);
-        try
-        {
-            response.close();
-            httpClient.close();
-        } catch (Exception e)
-        {
-            log(e.getMessage());
-        }
+        closeResponse(response);
         return resposne;
     }
 
@@ -202,7 +196,9 @@ public class HttpClientUtil
         this.revert();
         CloseableHttpResponse response = httpClient.execute(method);
         log("HttpClient executed with status: " + response.getStatusLine().getStatusCode());
-        return convertResponseHeaders(response.getAllHeaders());
+        Map<String, String> result = convertResponseHeaders(response.getAllHeaders());
+        closeResponse(response);
+        return result;
     }
 
     private Map<String, String> convertResponseHeaders(Header[] headers)
@@ -245,6 +241,17 @@ public class HttpClientUtil
     public void setHttpEntity(String body)
     {
         this.body = body;
+    }
+
+    private void closeResponse(CloseableHttpResponse response)
+    {
+        try
+        {
+            response.close();
+        } catch (IOException e)
+        {
+            this.log(e.getMessage());
+        }
     }
 
     /**
