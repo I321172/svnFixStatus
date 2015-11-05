@@ -8,19 +8,33 @@ import i321172.utils.dao.DBUtil;
 import i321172.utils.svn.LogEntryHandlerDBMapping;
 import i321172.utils.svn.SVNUtil;
 
+import org.apache.log4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ScheduledTasks
 {
+    private Logger logger = Logger.getLogger(getClass());
+
     @Scheduled(fixedDelay = 9900000)
     public void refreshEnvSFVersion() throws Exception
     {
         HttpClientUtil httpUtil = MyContext.getBean(HttpClientUtil.class);
+        String info;
         for (EnvEnum elem : EnvEnum.values())
         {
-            elem.setVersionInfo(httpUtil.fetchWeb(elem.toVersionUrl(), elem.isNeedProxy()));
+            info = null;
+            try
+            {
+                info = httpUtil.fetchWeb(elem.toVersionUrl(), elem.isNeedProxy());
+            } catch (Exception e)
+            {
+                logger.info("Fetch Envirionment:" + elem.toString() + " fail by " + e.getClass()
+                        + "; More detail in Debug appender");
+                logger.debug(e.getMessage());
+            }
+            elem.setVersionInfo(info);
         }
     }
 

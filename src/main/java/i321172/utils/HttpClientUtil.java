@@ -262,7 +262,7 @@ public class HttpClientUtil
      */
     private HttpHost getSystemProxy()
     {
-        return new HttpHost("proxy", 8080);
+        return new HttpHost("proxy.wdf.sap.corp", 8080);
     }
 
     private void log(String msg)
