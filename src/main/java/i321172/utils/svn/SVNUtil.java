@@ -174,12 +174,15 @@ public class SVNUtil
 
     private String getMatchString(String source, String pattern)
     {
-        Pattern pat = Pattern.compile(pattern);
-        Matcher matcher = pat.matcher(source);
-
-        if (matcher.find())
+        if (source != null)
         {
-            return source.substring(matcher.start(), matcher.end());
+            Pattern pat = Pattern.compile(pattern);
+            Matcher matcher = pat.matcher(source);
+
+            if (matcher.find())
+            {
+                return source.substring(matcher.start(), matcher.end());
+            }
         }
 
         return null;
