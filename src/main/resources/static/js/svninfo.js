@@ -3,13 +3,34 @@ function filter() {
 	var val = document.getElementById("filter").value;
 	var tabl = document.getElementsByTagName("table");
 	for (var i = 0; i < tabl.length; i++) {
-		var tds = tabl[i].getElementsByClassName("long");
-		var var1 = tds[0].innerHTML;
-		if (var1.indexOf("File:") >= 0) {
-			var1 = var1.substring(var1.lastIndexOf("/") + 1);
-			if (var1.indexOf(val) < 0) {
-				tabl[i].setAttribute("hidden", "true");
-				hiddenNum++;
+		if (tabl[i].getAttribute("hidden") == null) {
+			var tds = tabl[i].getElementsByClassName("long");
+			var var1 = tds[0].innerHTML;
+			if (var1.indexOf("File:") >= 0) {
+				var1 = var1.substring(var1.lastIndexOf("/") + 1);
+				if (var1.indexOf(val) < 0) {
+					tabl[i].setAttribute("hidden", "true");
+					hiddenNum++;
+				}
+			}
+		}
+	}
+	changeSizeInfo();
+}
+
+function filterPackage() {
+	var val = document.getElementById("filterPackage").value;
+	var tabl = document.getElementsByTagName("table");
+	for (var i = 0; i < tabl.length; i++) {
+		if (tabl[i].getAttribute("hidden") == null) {
+			var tds = tabl[i].getElementsByClassName("long");
+			var var1 = tds[0].innerHTML;
+			if (var1.indexOf("File:") >= 0) {
+				var1 = var1.substring(0, var1.lastIndexOf("/"));
+				if (var1.indexOf(val) < 0) {
+					tabl[i].setAttribute("hidden", "true");
+					hiddenNum++;
+				}
 			}
 		}
 	}
@@ -23,6 +44,8 @@ function reset() {
 		eles[i].removeAttribute("hidden");
 	}
 	changeSizeInfo();
+	document.getElementById("filter").value="";
+	document.getElementById("filterPackage").value="";
 }
 
 function filterEvent(event) {

@@ -13,8 +13,11 @@
 	th:text="'Check In History for '+${author}+' between '+${start}+' to '+${end}">Check
 	SVN checkIn History</h3>
 <input id="filter" type="text" onkeydown="filterEvent(event)"
-	placeholder="Filter Name" />
+	placeholder="Filter File Name" />
 <input type="button" onclick="filter()" value="Submit" />
+<input id="filterPackage" type="text"
+	onkeydown="filterPackageEvent(event)" placeholder="Filter Package Name" />
+<input type="button" onclick="filterPackage()" value="Submit" />
 <input type="button" onclick="reset()" value="Reset" />
 <p class="bg" th:text="'List Total '+${size}+' File(s) below: '">List:</p>
 

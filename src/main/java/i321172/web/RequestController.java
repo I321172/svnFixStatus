@@ -196,7 +196,7 @@ public class RequestController
     private String fetchCompileError(String response)
     {
         String regex = "\\[javac\\].*";
-        String code = "uitests.webdriver";
+        String code = "home/i832517";
         boolean isContinue = false;
         Pattern pat = Pattern.compile(regex);
         Matcher mat = pat.matcher(response);

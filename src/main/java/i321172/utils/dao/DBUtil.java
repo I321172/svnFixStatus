@@ -119,7 +119,7 @@ public class DBUtil
 
     public List<SVNFileBean> getSVNInfoList(String author, String begin, String end)
     {
-        return getSVNInfoList(author, begin, end, "type='Add' and (f.copypath is null or f.copy='null')");
+        return getSVNInfoList(author, begin, end, "type='Add' and (f.copypath is null or f.copypath='null')");
     }
 
     public List<SVNFileBean> getSVNInfoList(String author, String begin, String end, String externalCondition)
@@ -130,6 +130,7 @@ public class DBUtil
             sql.append(" and to_days(r.date)<to_days('" + end + "')");
         if (externalCondition != null)
             sql.append(" and " + externalCondition);
+        sql.append(" order by r.date desc");
         return jdbc.query(sql.toString(), new Object[] { author, begin }, new SVNMapper());
     }
 

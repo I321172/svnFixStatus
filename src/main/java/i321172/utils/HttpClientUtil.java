@@ -247,9 +247,15 @@ public class HttpClientUtil
         this.body = body;
     }
 
+    /**
+     * proxy:8080 origin one<br>
+     * proxy.wdf.sap.corp:8080 not known
+     * 
+     * @return
+     */
     private HttpHost getSystemProxy()
     {
-        return new HttpHost("proxy", 8080);
+        return new HttpHost("proxy.wdf.sap.corp", 8080);
     }
 
     private void log(String msg)
