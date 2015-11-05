@@ -88,4 +88,11 @@ public class ScheduledTasks
         cache.setAepCookie(aepCookie);
     }
 
+    @Scheduled(cron = "0 0 0 1 * ?")
+    public void refreshFileNameTable() throws Exception
+    {
+        DBUtil dbUtil = MyContext.getBean(DBUtil.class);
+        dbUtil.getLatestFilePathToNamePair();
+    }
+
 }

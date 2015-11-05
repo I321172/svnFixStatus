@@ -143,4 +143,10 @@ public class DBUtil
         }
     }
 
+    public void getLatestFilePathToNamePair()
+    {
+        String sql = "insert into filename(filepath,filename) select distinct filepath,substring_index(filepath,'/',-1) from fileinfo where filepath not in (select filepath from filename)";
+        jdbc.update(sql);
+    }
+
 }

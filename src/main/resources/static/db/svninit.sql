@@ -8,7 +8,7 @@ primary key(filepath,revision)
 
 create table if not exists filename(
 filepath varchar(600) primary key,
-filename varchar(80),
+filename varchar(300),
 valid bit
 )
 
@@ -20,5 +20,6 @@ comment varchar(1000)
 )
 
 
-}
+#regular query filename
+insert into filename(filepath,filename) select distinct filepath,substring_index(filepath,'/',-1) from fileinfo where filepath not in (select filepath from filename);
 
