@@ -14,8 +14,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class LogAdvice
 {
-    private Logger logger   = Logger.getLogger(getClass());
-    private int    svnCount = 0;
+    private Logger logger    = Logger.getLogger(getClass());
+    private int    svnCount  = 0;
+    private int    httpCount = 0;
 
     @Around(value = "i321172.aop.log.LogPointCut.logSvnAction(param)", argNames = "param")
     public Object logSvnAction(ProceedingJoinPoint pjp, long param) throws Throwable
@@ -56,10 +57,11 @@ public class LogAdvice
     @Around(value = "i321172.aop.log.LogPointCut.logHttpDuration()")
     public Object logHttpDuration(ProceedingJoinPoint pjp) throws Throwable
     {
-        log("Start to fetch Http Info: " + pjp.getArgs()[0]);
+        httpCount++;
+        log("Start to fetch Http Info:" + httpCount + "- " + pjp.getArgs()[0]);
         long start = getTime();
         Object result = pjp.proceed();
-        log("HTTP Operation Success which takes " + getDuration(start) + " on method ["
+        log("HTTP Operation: " + httpCount + "- Success which takes " + getDuration(start) + " on method ["
                 + pjp.getSignature().toShortString() + "]");
         return result;
     }
