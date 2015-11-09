@@ -1,10 +1,17 @@
 package i321172.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import i321172.MyContext;
+import i321172.bean.HttpClientBean;
 import i321172.web.CacheData;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class AEPUtil
@@ -39,7 +46,7 @@ public class AEPUtil
      */
     public String fetchAEPJob() throws Exception
     {
-        return fetchAEPJob(null, null, null, null);
+        return fetchAEPJobString(null, null, null, null);
     }
 
     /**
@@ -52,7 +59,7 @@ public class AEPUtil
      * @return
      * @throws Exception
      */
-    public String fetchAEPJob(String username, String moduleFilter, String jobStatus, String envFilter)
+    public String fetchAEPJobString(String username, String moduleFilter, String jobStatus, String envFilter)
             throws Exception
     {
         StringBuffer url = new StringBuffer(aepUrl);
@@ -67,9 +74,19 @@ public class AEPUtil
         url.append("&max=20&offset=0");
         HttpClientUtil http = MyContext.getBean(HttpClientUtil.class);
         CacheData cache = MyContext.getBean(CacheData.class);
-        http.addHeader("Cookie", cache.getAepCookie());
-        String resp = http.fetchWeb(url.toString(), false);
-        return resp;
+        HttpClientBean httpBean = new HttpClientBean.Builder(url.toString()).setProxy(false)
+                .addHeaders("Cookie", cache.getAepCookie()).build();
+        http.fetchWeb(httpBean);
+        return httpBean.getResponseBody();
+    }
+
+    public JsonNode fetchAEPJobJsonTree(String username, String moduleFilter, String jobStatus, String envFilter)
+            throws Exception
+    {
+        String jsonString = fetchAEPJobString(username, moduleFilter, jobStatus, envFilter);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readTree(jsonString);
+        return jsonNode;
     }
 
     private String getUsername(String username)
@@ -87,9 +104,9 @@ public class AEPUtil
         return moduleFilter == null || moduleFilter.equals("Null") ? this.moduleFilter : moduleFilter;
     }
 
-    private String getJobStatus(String jobStatus)
+    private String getJobStatus(String jobStatus) throws UnsupportedEncodingException
     {
-        return jobStatus == null || jobStatus.equals("Null") ? this.jobStatus : jobStatus;
+        return jobStatus == null || jobStatus.equals("Null") ? this.jobStatus : URLEncoder.encode(jobStatus, "utf-8");
     }
 
     private String getEnvFilter(String envFilter)

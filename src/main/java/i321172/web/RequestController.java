@@ -1,10 +1,9 @@
 package i321172.web;
 
 import i321172.MyContext;
-import i321172.aop.log.LogAdvice;
 import i321172.bean.SVNFileBean;
 import i321172.bean.SvnInfoBean;
-import i321172.utils.AEPUtil;
+import i321172.bean.aep.JobStatus;
 import i321172.utils.HttpClientUtil;
 import i321172.utils.dao.DBUtil;
 import i321172.utils.svn.AddEntryHandler;
@@ -86,29 +85,25 @@ public class RequestController
         return "svninfo";
     }
 
+    @RequestMapping(value = "/show/aep")
+    public String fetchAEPRunningJobs(@RequestParam(value = "user", defaultValue = "Null") String username,
+            @RequestParam(value = "module", defaultValue = "Null") String moduleFilter,
+            @RequestParam(value = "status", defaultValue = "Null") String jobStatus,
+            @RequestParam(value = "env", defaultValue = "Null") String envFilter, Model model) throws Exception
+    {
+        model.addAttribute("user", username);
+        model.addAttribute("module", moduleFilter);
+        model.addAttribute("env", envFilter);
+        model.addAttribute("allStatus", JobStatus.values());
+        return "aeprun";
+    }
+
     @RequestMapping(value = "/refresh/task")
     public String refreshTask(Model model) throws Exception
     {
         String msg = null;
-        msg = "Schedule Task Triggered " + (refreshTask() ? "Success" : "Failure") + "! ";
-        model.addAttribute("result", msg);
-        return "result";
-    }
-
-    @RequestMapping(value = "/close/conn")
-    public String refreshConnect(Model model) throws Exception
-    {
-        DBUtil util = MyContext.getBean("dbUtil", DBUtil.class);
-        util.releaseConnectionPool();
-        model.addAttribute("result", "Connection All Closed! Connection Pool Refreshed!");
-        return "result";
-    }
-
-    @RequestMapping(value = "/show/status")
-    public String showRequestStatus(Model model)
-    {
-        LogAdvice advice = MyContext.getBean("logAdvice", LogAdvice.class);
-        String msg = "SVN Fix Status Visit Count: " + advice.getSvnCount();
+        refreshTask();
+        msg = "Schedule Task Triggered Success! ";
         model.addAttribute("result", msg);
         return "result";
     }
@@ -118,7 +113,7 @@ public class RequestController
     {
         HttpClientUtil httpClient = MyContext.getBean(HttpClientUtil.class);
         url = getCompileUrl(url);
-        String response = httpClient.fetchWeb(url, false);
+        String response = httpClient.fetchWebResponse(url, false);
         String result = null;
         if (response.contains("BUILD SUCCESSFUL"))
         {
@@ -131,18 +126,9 @@ public class RequestController
         return "result";
     }
 
-    private boolean refreshTask()
+    private void refreshTask()
     {
-        ScheduledTasks tasks = MyContext.getBean(ScheduledTasks.class);
-        try
-        {
-            tasks.refreshEnvSFVersion();
-        } catch (Exception e)
-        {
-            log(e.getMessage());
-            return false;
-        }
-        return true;
+        MyContext.getBean(ScheduledTasks.class).refreshEnvSFVersion();
     }
 
     private String getCompileUrl(String url)

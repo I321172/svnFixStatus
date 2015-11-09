@@ -20,8 +20,8 @@ public class LogPointCut
     public void logScheduleTask()
     {}
 
-    @Pointcut(value = "execution(* *.utils.Http*.fetchWeb(..))&& args(url,..)")
-    public void logHttpDuration(String url)
+    @Pointcut(value = "execution(* *.utils.Http*.fetchWeb*(..))")
+    public void logHttpDuration()
     {}
 
     @Pointcut(value = "execution(* *.web.Sche*.refreshEnv*())")

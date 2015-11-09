@@ -1,0 +1,22 @@
+package i321172.bean.aep;
+
+public enum JobStatus
+{
+    Started, Initializing, InProgress("In Progress"), Failed, CreationFailed("Creation Failed"), Completed, Aborting, Aborted;
+    public String status;
+
+    JobStatus()
+    {
+
+    }
+
+    JobStatus(String status)
+    {
+        this.status = status;
+    }
+
+    public String toStatusString()
+    {
+        return status != null ? status : toString();
+    }
+}

@@ -1,14 +1,14 @@
 package i321172.utils;
 
+import i321172.bean.HttpClientBean;
+
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
@@ -25,126 +25,73 @@ import org.springframework.stereotype.Service;
 @Service
 public class HttpClientUtil
 {
-    private Map<String, String> headers    = new HashMap<String, String>();
-    private String              body;
-    private Logger              logger     = Logger.getLogger(getClass());
-    private String              methodType = "Get";
+    private Logger logger = Logger.getLogger(getClass());
 
     /**
-     * Default with proxy:8080
+     * @param url
+     * @param isProxy
+     *            Default proxy : proxy:8080
+     * @return
+     * @throws Exception
      */
-    public String fetchWeb(String url) throws Exception
+    public String fetchWebResponse(String url, boolean isProxy) throws Exception
     {
-        return fetchWeb(url, null);
+        return fetchWebResponse(new HttpClientBean.Builder(url).setProxy(isProxy).build());
     }
 
-    public String fetchWeb(String url, String customProxy) throws Exception
+    public String fetchWebResponse(HttpClientBean httpBean) throws Exception
     {
-        return fetchWeb(url, true, customProxy);
+        httpBean = fetchWeb(httpBean);
+        return httpBean.getResponseBody();
     }
 
-    public String fetchWeb(String queryUrl, boolean isProxy) throws Exception
-    {
-        String response = this.fetchWeb(queryUrl, isProxy, null);
-        return response;
-    }
-
-    public String fetchWeb(String url, boolean isProxy, String customProxy) throws Exception
-    {
-        return fetchWeb(url, isProxy, customProxy, true);
-    }
-
-    public String fetchWeb(String url, boolean isNeedProxy, String customProxy, boolean isDisableRedirect)
-            throws Exception
+    public HttpClientBean fetchWeb(final HttpClientBean httpBean) throws IOException
     {
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        RequestConfig httpConfig = getRequestConfig(isNeedProxy, customProxy, isDisableRedirect);
+        RequestConfig httpConfig = httpBean.getRequestConfig();
         HttpRequestBase method = null;
+        String methodType = httpBean.getMethodType();
+        String queryUrl = httpBean.getUrl();
         switch (methodType)
         {
             case "Get":
-                method = new HttpGet(url);
+                method = new HttpGet(queryUrl);
                 break;
 
             case "Delete":
-                method = new HttpDelete(url);
+                method = new HttpDelete(queryUrl);
                 break;
 
             case "Post":
                 // headers.put("Content-Type",
                 // "application/x-www-form-urlencoded");
-                method = new HttpPost(url);
-                ((HttpPost) method).setEntity(this.getHttpEntity());
+                method = new HttpPost(queryUrl);
+                ((HttpPost) method).setEntity(this.getHttpEntity(httpBean));
                 break;
         }
         method.setConfig(httpConfig);
-        addHeader(method);
-        log(methodType + " on [" + url + "]");
-        this.revert();
+        addHeader(httpBean, method);
+        log(httpBean.toString());
         CloseableHttpResponse response = httpClient.execute(method);
         log("HttpClient executed with status: " + response.getStatusLine().getStatusCode());
-
-        String resposne = EntityUtils.toString(response.getEntity());
-        log("HttpClient response: " + resposne);
+        Map<String, String> responseHeaders = convertResponseHeaders(response.getAllHeaders());
+        httpBean.setResponseHeaders(responseHeaders);
+        String responseBody = EntityUtils.toString(response.getEntity());
+        log("HttpClient response: " + responseBody);
+        httpBean.setResponseBody(responseBody);
         closeResponse(response);
-        return resposne;
+        return httpBean;
+
     }
 
-    private void addHeader(HttpRequestBase method)
+    private void addHeader(HttpClientBean httpBean, HttpRequestBase method)
     {
+        Map<String, String> headers = httpBean.getHeaders();
         for (String header : headers.keySet())
         {
             method.addHeader(header, headers.get(header));
             log("Add header: " + header + " = " + headers.get(header));
         }
-    }
-
-    public void addHeader(String name, String value)
-    {
-        headers.put(name, value);
-    }
-
-    /**
-     * Set handle redirect or not; default no redirect <br>
-     * isNeedProxy is to set system proxy<br>
-     * If set customProxy, it will override isNeedProxy<br>
-     * isDisableRedirect default as true to capture the first response of the
-     * request;
-     * 
-     * @return
-     */
-    private RequestConfig getRequestConfig(boolean isNeedProxy, String customProxy, boolean isDisableRedirect)
-    {
-        /**
-         * On rot, if without proxy[proxy.successfactors.com:8080], unknown host
-         * exception occurs;<br>
-         * if use rot IP, don't need proxy
-         */
-        RequestConfig config = null;
-        if (isNeedProxy)
-        {
-            if (!isNull(customProxy))
-            {
-                config = RequestConfig.custom().setProxy(new HttpHost(customProxy)).build();
-                log("Set custom proxy to httpclient in SAP network: " + customProxy);
-            } else
-            {
-                // set system proxy
-                config = RequestConfig.custom().setProxy(getSystemProxy()).build();
-            }
-        } else
-        {
-            config = RequestConfig.custom().build();
-            log(" Httpclient without proxy!");
-        }
-
-        if (isDisableRedirect)
-        {
-            config = RequestConfig.copy(config).setRedirectsEnabled(false).setCircularRedirectsAllowed(false)
-                    .setRelativeRedirectsAllowed(false).build();
-            log("Disable redirect in httpclient!");
-        }
-        return config;
     }
 
     /**
@@ -162,7 +109,9 @@ public class HttpClientUtil
 
     public String getCookieValue(String url, boolean isProxy, String cookieName) throws Exception
     {
-        Map<String, String> respHeaders = fetchResponseHeader(url, isProxy);
+        HttpClientBean httpBean = new HttpClientBean.Builder(url).setProxy(isProxy).build();
+        httpBean = fetchWeb(httpBean);
+        Map<String, String> respHeaders = httpBean.getResponseHeaders();
         String cookie = respHeaders.get("Set-Cookie");
         if (isNull(cookie))
             return null;
@@ -171,33 +120,6 @@ public class HttpClientUtil
         {
             result = cookie.replaceAll(".*(" + cookieName + ".*?);.*", "$1");
         }
-        return result;
-    }
-
-    public Map<String, String> fetchResponseHeader(String url) throws Exception
-    {
-        return fetchResponseHeader(url, true);
-    }
-
-    public Map<String, String> fetchResponseHeader(String url, boolean isProxy) throws Exception
-    {
-        return fetchResponseHeader(url, isProxy, null, true);
-    }
-
-    public Map<String, String> fetchResponseHeader(String url, boolean isProxy, String customProxy,
-            boolean isDisableRedirect) throws Exception
-    {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        RequestConfig httpConfig = getRequestConfig(isProxy, customProxy, isDisableRedirect);
-        HttpGet method = new HttpGet(url);
-        method.setConfig(httpConfig);
-        addHeader(method);
-        log(methodType + " on [" + url + "]");
-        this.revert();
-        CloseableHttpResponse response = httpClient.execute(method);
-        log("HttpClient executed with status: " + response.getStatusLine().getStatusCode());
-        Map<String, String> result = convertResponseHeaders(response.getAllHeaders());
-        closeResponse(response);
         return result;
     }
 
@@ -226,21 +148,16 @@ public class HttpClientUtil
         return text == null;
     }
 
-    private HttpEntity getHttpEntity() throws UnsupportedEncodingException
+    private HttpEntity getHttpEntity(HttpClientBean clientBean)
     {
-        if (!isNull(body))
+        if (!isNull(clientBean.getBody()))
         {
-            HttpEntity entity = new StringEntity(body, Charset.forName("UTF-8"));
+            HttpEntity entity = new StringEntity(clientBean.getBody(), Charset.forName("UTF-8"));
             return entity;
         } else
         {
             return null;
         }
-    }
-
-    public void setHttpEntity(String body)
-    {
-        this.body = body;
     }
 
     private void closeResponse(CloseableHttpResponse response)
@@ -254,34 +171,9 @@ public class HttpClientUtil
         }
     }
 
-    /**
-     * proxy:8080 origin one<br>
-     * proxy.wdf.sap.corp:8080 not known
-     * 
-     * @return
-     */
-    private HttpHost getSystemProxy()
-    {
-        return new HttpHost("proxy.wdf.sap.corp", 8080);
-    }
-
     private void log(String msg)
     {
         logger.debug(msg);
     }
 
-    public void setMethodType(String method)
-    {
-        this.methodType = method;
-    }
-
-    /**
-     * For Singleton purpose, remove header/body/method after execute
-     */
-    private void revert()
-    {
-        headers.clear();
-        setHttpEntity(null);
-        setMethodType("Get");
-    }
 }

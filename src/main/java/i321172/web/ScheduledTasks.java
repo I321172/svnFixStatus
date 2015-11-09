@@ -17,8 +17,17 @@ public class ScheduledTasks
 {
     private Logger logger = Logger.getLogger(getClass());
 
+    @Scheduled(fixedDelay = 3600000)
+    public void refreshAEPCookie() throws Exception
+    {
+        AEPUtil aepUtil = MyContext.getBean(AEPUtil.class);
+        CacheData cache = MyContext.getBean(CacheData.class);
+        String aepCookie = aepUtil.fetchAEPLoginCookie(null, null);
+        cache.setAepCookie(aepCookie);
+    }
+
     @Scheduled(fixedDelay = 9900000)
-    public void refreshEnvSFVersion() throws Exception
+    public void refreshEnvSFVersion()
     {
         HttpClientUtil httpUtil = MyContext.getBean(HttpClientUtil.class);
         String info;
@@ -27,12 +36,12 @@ public class ScheduledTasks
             info = null;
             try
             {
-                info = httpUtil.fetchWeb(elem.toVersionUrl(), elem.isNeedProxy());
+                info = httpUtil.fetchWebResponse(elem.toVersionUrl(), elem.isNeedProxy());
             } catch (Exception e)
             {
                 logger.info("Fetch Envirionment:" + elem.toString() + " fail by " + e.getClass()
                         + "; More detail in Debug appender");
-                logger.debug(e.getMessage());
+                logger.debug(e.toString());
             }
             elem.setVersionInfo(info);
         }
@@ -91,15 +100,6 @@ public class ScheduledTasks
             start = svnUtil.getRevisionAvailable(start + 1, max);
             svnUtil.fetchSVNBasicLogEntry(logHander, start, max);
         }
-    }
-
-    @Scheduled(fixedDelay = 3600000)
-    public void refreshAEPCookie() throws Exception
-    {
-        AEPUtil aepUtil = MyContext.getBean(AEPUtil.class);
-        CacheData cache = MyContext.getBean(CacheData.class);
-        String aepCookie = aepUtil.fetchAEPLoginCookie(null, null);
-        cache.setAepCookie(aepCookie);
     }
 
     @Scheduled(cron = "0 0 0 1 * ?")

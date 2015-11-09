@@ -4,18 +4,24 @@
 <title>AEP Run Information</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <script th:src="@{/js/aeprun.js}"></script>
-<script th:inline="javascript">
-
-	var urlPrefix=[[${urlPrefix}]];
-}
-</script>
+<link rel="stylesheet" href="/css/aep.css" th:href="@{/css/aep.css}" />
 </head>
 <body>
-	<h1 onclick="fetchRunningJobs()">Click to Test AJAX</h1>
-	<div id="running">
-		<label id="showmsg">Show Ajax Rquest ResponseText</label>
+	<label id="user" th:text="${user}" hidden="true"></label>
+	<label id="module" th:text="${module}" hidden="true"></label>
+	<label id="env" th:text="${env}" hidden="true"></label>
+	<div th:each="status:${allStatus}" th:id="${status.toStatusString()}">
+		<div class="title">
+			<label class="status"
+				th:text="${status.toStatusString()+' Status Job '}"></label> <input
+				class="refresh" type="button" onclick="fetchRunningJobs(this)"
+				value="Refresh" />
+		</div>
+		<div class="content"></div>
 	</div>
-	<div id="complete"></div>
+	<div id="loading" hidden="true">
+		<label>Loading ... </label> <img src="/images/loading.gif" />
+	</div>
 
 </body>
 </html>
