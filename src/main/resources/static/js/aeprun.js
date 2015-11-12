@@ -1,5 +1,5 @@
 var httpRequests = null;
-var httpRequests;
+var resp;
 var index = 0;
 
 function createHttpRequest() {
@@ -43,11 +43,11 @@ function initHttpRequest() {
 	httpRequests[0] = createHttpRequest();
 	httpRequests[1] = createHttpRequest();
 	httpRequests[2] = createHttpRequest();
-
 }
 
 function fetchRunningJobs(dom) {
 	var content = dom.parentNode.parentNode.getElementsByClassName("content")[0];
+	showContent(content, true);
 	loading(content, true);
 	var httpRequest = getHttpRequest();
 	httpRequest.open("GET", convertUrl(dom), true);
@@ -55,10 +55,100 @@ function fetchRunningJobs(dom) {
 	httpRequest.onreadystatechange = function() {
 		if (httpRequest.readyState == 4) {
 			if (httpRequest.status == 200) {
-				alert(httpRequest.responseText);
 				loading(content, false);
+				showJobs(content, httpRequest.responseText);
 			}
 		}
+	}
+}
+
+function changeContent(dom) {
+	var content = dom.parentNode.parentNode.getElementsByClassName("content")[0];
+	var isShow = dom.value == "Show";
+	showContent(content, isShow);
+}
+
+function showContent(content, show) {
+	if (show) {
+		content.removeAttribute("hidden");
+		content.parentNode.getElementsByClassName("collapse")[0].value = "Hide";
+	} else {
+		content.setAttribute("hidden", "true");
+		content.parentNode.getElementsByClassName("collapse")[0].value = "Show";
+	}
+}
+
+function showJobs(dom, response) {
+	resp = JSON.parse(response);
+	removeAllChild(dom);
+	appendSummary(dom);
+	appendJobStatus(dom);
+}
+
+function appendSummary(dom) {
+	var la = document.createElement("label");
+	la.innerHTML = "Total Count = " + resp.totalCount + " ; List Count = "
+			+ resp.actualCount;
+	dom.appendChild(la);
+}
+
+function appendJobStatus(dom) {
+	var tb = createTable(dom);
+	fillTableWithJobStatus(tb)
+}
+
+function createTable(dom) {
+	var tb = document.createElement("table");
+	tb.setAttribute("class", "joblist");
+	var len = resp.jobRuns.length;
+	var rLen = len / 4;
+	for (var i = 0; i < rLen; i++) {
+		var row = tb.insertRow(i);
+		for (var cLen = 0; cLen < 4; cLen++) {
+			row.insertCell(cLen).innerHTML = "&nbsp;"
+		}
+	}
+	dom.appendChild(tb);
+	return tb;
+}
+
+function createLink(job) {
+	var link = document.createElement("a");
+	link.setAttribute("href", "#");
+	link.setAttribute("class", job.jobStatus);
+	link.setAttribute("onclick", "changeHref(this)");
+	link.innerHTML = job.jobName;
+	return link;
+}
+
+// 
+function fillTableWithJobStatus(tb) {
+	var jobs = resp.jobRuns;
+	var index = 0;
+	for (var i = 0; i < tb.rows.length; i++) {
+		for (var j = 0; j < tb.rows[0].cells.length; j++) {
+			if (index < jobs.length) {
+				var link = createLink(jobs[index])
+				tb.rows[i].cells[j].appendChild(link);
+				index++;
+			}
+		}
+	}
+}
+
+function changeHref(dom) {
+	var type = dom.getAttribute("class");
+	if (type.indexOf("Started") > 0 || type.indexOf("Initializing") > 0
+			|| type.indexOf("Progress") > 0) {
+
+	}
+	dom.setAttribute("href", "http://www.baidu.com");
+}
+
+function removeAllChild(dom) {
+	var len = dom.childNodes.length;
+	for (var i = 0; i < len; i++) {
+		dom.removeChild(dom.lastChild);
 	}
 }
 

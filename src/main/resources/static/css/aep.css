@@ -6,3 +6,12 @@
 	position: absolute;
 	left: 200px;
 }
+
+.collapse {
+	position: absolute;
+	left: 262px;
+}
+
+.joblist {
+	width: 80%
+}

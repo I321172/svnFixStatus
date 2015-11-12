@@ -9,20 +9,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
 @RestController
 public class RestfulController
 {
 
     @RequestMapping(value = "/aep")
-    public String fetchAEPRunningJobs(@RequestParam(value = "user", defaultValue = "Null") String username,
-            @RequestParam(value = "module", defaultValue = "Null") String moduleFilter,
-            @RequestParam(value = "status", defaultValue = "Null") String jobStatus,
-            @RequestParam(value = "env", defaultValue = "Null") String envFilter) throws Exception
+    public String fetchAEPRunningJobs(@RequestParam(value = "user", required = false) String username,
+            @RequestParam(value = "module", required = false) String moduleFilter,
+            @RequestParam(value = "status", required = false) String jobStatus,
+            @RequestParam(value = "env", required = false) String envFilter) throws Exception
     {
         AEPUtil aep = MyContext.getBean(AEPUtil.class);
-        String result = aep.fetchAEPJobString(username, moduleFilter, jobStatus, envFilter);
-        return result;
+        return aep.fetchAEPJobJsonTree(username, moduleFilter, jobStatus, envFilter).toString();
     }
 
     @RequestMapping(value = "/show/status")

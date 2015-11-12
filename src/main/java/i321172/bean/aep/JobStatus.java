@@ -2,7 +2,7 @@ package i321172.bean.aep;
 
 public enum JobStatus
 {
-    Started, Initializing, InProgress("In Progress"), Failed, CreationFailed("Creation Failed"), Completed, Aborting, Aborted;
+    Started, Initializing, InProgress("In Progress"), Completed, Failed, CreationFailed("Creation Failed"), Aborting, Aborted;
     public String status;
 
     JobStatus()

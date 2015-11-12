@@ -2,6 +2,9 @@ package i321172.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import i321172.MyContext;
 import i321172.bean.HttpClientBean;
@@ -12,11 +15,12 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Service
 public class AEPUtil
 {
-
     @Value("${aep.url}")
     private String aepUrl;
     @Value("${aep.username}")
@@ -71,7 +75,7 @@ public class AEPUtil
         url.append(getJobStatus(jobStatus));
         url.append("&invocationTypes=ARP,Cron,FailureReRun,Manual,Missed&environmentDropDownFilter=");
         url.append(getEnvFilter(envFilter));
-        url.append("&max=20&offset=0");
+        url.append("&max=40&offset=0");
         HttpClientUtil http = MyContext.getBean(HttpClientUtil.class);
         CacheData cache = MyContext.getBean(CacheData.class);
         HttpClientBean httpBean = new HttpClientBean.Builder(url.toString()).setProxy(false)
@@ -86,31 +90,57 @@ public class AEPUtil
         String jsonString = fetchAEPJobString(username, moduleFilter, jobStatus, envFilter);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(jsonString);
-        return jsonNode;
+        ArrayNode jArrays = mapper.createArrayNode();
+        ObjectNode resultNode = mapper.createObjectNode();
+        for (Iterator<String> i = jsonNode.fieldNames(); i.hasNext();)
+        {
+            String fieldName = i.next();
+            if (jsonNode.findValue(fieldName).isArray())
+            {
+                Set<String> jobName = new HashSet<String>();
+                for (Iterator<JsonNode> ele = jsonNode.findValue(fieldName).elements(); ele.hasNext();)
+                {
+                    JsonNode cur = ele.next();
+                    String name = cur.get("jobName").asText();
+                    if (!jobName.contains(name))
+                    {
+                        jobName.add(name);
+                        jArrays.add(cur);
+                    }
+                }
+                resultNode.put("actualCount", jArrays.size());
+                resultNode.set(fieldName, jArrays);
+            } else
+            {
+                resultNode.put(fieldName, jsonNode.findValue(fieldName).asText());
+            }
+        }
+        return resultNode;
     }
 
     private String getUsername(String username)
     {
-        return (username == null || username.equals("Null")) ? this.username : username;
+        return StringUtil.isNullOrEmpty(username) ? this.username : username;
     }
 
     private String getPassword(String password)
     {
-        return password == null || password.equals("Null") ? this.password : password;
+        return StringUtil.isNullOrEmpty(password) ? this.password : password;
     }
 
     private String getModuleFilter(String moduleFilter)
     {
-        return moduleFilter == null || moduleFilter.equals("Null") ? this.moduleFilter : moduleFilter;
+        return StringUtil.isNullOrEmpty(moduleFilter) ? this.moduleFilter : moduleFilter;
     }
 
     private String getJobStatus(String jobStatus) throws UnsupportedEncodingException
     {
-        return jobStatus == null || jobStatus.equals("Null") ? this.jobStatus : URLEncoder.encode(jobStatus, "utf-8");
+        return StringUtil.isNullOrEmpty(jobStatus) ? this.jobStatus : URLEncoder.encode(jobStatus, "utf-8");
     }
 
     private String getEnvFilter(String envFilter)
     {
-        return envFilter == null || envFilter.equals("Null") ? this.envFilter : envFilter;
+        return StringUtil.isNullOrEmpty(envFilter) ? this.envFilter : envFilter;
     }
+
 }

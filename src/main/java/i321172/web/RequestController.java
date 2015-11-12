@@ -13,10 +13,14 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -86,16 +90,38 @@ public class RequestController
     }
 
     @RequestMapping(value = "/show/aep")
-    public String fetchAEPRunningJobs(@RequestParam(value = "user", defaultValue = "Null") String username,
-            @RequestParam(value = "module", defaultValue = "Null") String moduleFilter,
-            @RequestParam(value = "status", defaultValue = "Null") String jobStatus,
-            @RequestParam(value = "env", defaultValue = "Null") String envFilter, Model model) throws Exception
+    public String fetchAEPRunningJobs(@RequestParam(value = "user", required = false) String username,
+            @RequestParam(value = "module", required = false) String moduleFilter,
+            @RequestParam(value = "status", required = false) String jobStatus,
+            @RequestParam(value = "env", required = false) String envFilter, Model model, HttpServletResponse response)
+            throws Exception
     {
+        CacheData cache = MyContext.getBean("cacheData", CacheData.class);
+        String[] cookiePair = cache.getAepCookie().split("=");
+        response.addCookie(new Cookie(cookiePair[0].trim(), cookiePair[1].trim()));
         model.addAttribute("user", username);
         model.addAttribute("module", moduleFilter);
         model.addAttribute("env", envFilter);
         model.addAttribute("allStatus", JobStatus.values());
         return "aeprun";
+    }
+
+    @RequestMapping(value = "/show/aepdef", method = RequestMethod.GET)
+    public String showAEPDef(Model model) throws Exception
+    {
+        DBUtil dbUtil = MyContext.getBean(DBUtil.class);
+        model.addAttribute("defs", dbUtil.getAEPDefinitions());
+        return "aepdef";
+    }
+
+    @RequestMapping(value = "/show/aepdef", method = RequestMethod.POST)
+    public String updateAEPDef(Model model, @RequestParam(value = "add", required = false) String add,
+            @RequestParam(value = "edit", required = false) String edit,
+            @RequestParam(value = "delete", required = false) String delete) throws Exception
+    {
+        DBUtil dbUtil = MyContext.getBean(DBUtil.class);
+        model.addAttribute("defs", dbUtil.getAEPDefinitions());
+        return "aepdef";
     }
 
     @RequestMapping(value = "/refresh/task")

@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>AEP Definition Information</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script th:src="@{/js/aepdef.js}"></script>
+<link rel="stylesheet" href="/css/aepdef.css"
+	th:href="@{/css/aepdef.css}" />
+</head>
+<body>
+	<h1>AEP Job Definition Information</h1>
+	<div th:each="def:${defs}" th:id="${def.key}">
+
+				<div class="content"></div>
+	</div>
+	<div id="new">
+		<input />
+	</div>
+	<form id="fetch" action="/show/aep">
+		<input name="add" hidden="true" /> 
+		<input name="edit" hidden="true" />
+		<input name="delete" hidden="true" /> 
+		<input type="button" onclick="submit()" value="Submit" />
+	</form>
+
+</body>
+</html>

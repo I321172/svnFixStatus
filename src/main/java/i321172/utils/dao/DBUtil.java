@@ -1,8 +1,13 @@
 package i321172.utils.dao;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import i321172.MyContext;
+import i321172.bean.Entry;
 import i321172.bean.SVNFileBean;
 
 import javax.annotation.Resource;
@@ -10,6 +15,8 @@ import javax.annotation.Resource;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 @Service("dbUtil")
@@ -141,6 +148,37 @@ public class DBUtil
         {
             execute("show global variables like 'wait_timeout'");
         }
+    }
+
+    public List<Entry> getAEPDefinitions()
+    {
+        String sql = "select name,id from aepdef";
+
+        return jdbc.query(sql, new RowMapper<Entry>()
+        {
+            @Override
+            public Entry mapRow(ResultSet rs, int rowNum) throws SQLException
+            {
+                // TODO Auto-generated method stub
+                Entry entry = new Entry();
+                entry.setKey(rs.getString("name"));
+                entry.setValue(rs.getString("id"));
+                return entry;
+            }
+        });
+    }
+
+    public int insertIntoAEPDef(Map<String, String> entrys)
+    {
+        StringBuffer sql = new StringBuffer("insert into aepdef values (");
+        for (String name : entrys.keySet())
+        {
+            sql.append(name);
+            sql.append(",");
+            sql.append(entrys.get(name));
+            sql.append(")");
+        }
+        return jdbc.update(sql.toString());
     }
 
     public void getLatestFilePathToNamePair()
