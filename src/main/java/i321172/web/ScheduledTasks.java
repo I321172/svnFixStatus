@@ -107,6 +107,8 @@ public class ScheduledTasks
     {
         DBUtil dbUtil = MyContext.getBean(DBUtil.class);
         dbUtil.getLatestFilePathToNamePair();
+        dbUtil.getUpdatedDeletedFile();
+        dbUtil.getUpdatedUnDeletedFile();
     }
 
 }

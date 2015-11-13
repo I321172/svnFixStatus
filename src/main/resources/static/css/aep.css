@@ -1,5 +1,6 @@
-.title {
+div.title {
 	background-color: #a4c2f4;
+	margin-bottom: 10px;
 }
 
 .refresh {
@@ -12,6 +13,11 @@
 	left: 262px;
 }
 
-.joblist {
-	width: 80%
+td {
+	width: 20%
+}
+
+table {
+	width: 100%;
+	table-layout: fixed
 }

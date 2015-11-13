@@ -2,7 +2,6 @@ package i321172.utils.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +14,6 @@ import javax.annotation.Resource;
 import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
@@ -132,9 +130,9 @@ public class DBUtil
     public List<SVNFileBean> getSVNInfoList(String author, String begin, String end, String externalCondition)
     {
         StringBuffer sql = new StringBuffer(
-                "select r.revision,r.author,r.date,r.comment,f.filepath,f.type,f.copypath from revision as r inner join fileinfo as f on r.revision=f.revision where r.author=? and to_days(r.date)>to_days(?)");
+                "select r.revision,r.author,r.date,r.comment,f.filepath,f.type,f.copypath from revision as r inner join fileinfo as f on r.revision=f.revision where r.author=? and r.date>?");
         if (end != null && !end.equals("Now"))
-            sql.append(" and to_days(r.date)<to_days('" + end + "')");
+            sql.append(" and r.date)<'" + end + "'");
         if (externalCondition != null)
             sql.append(" and " + externalCondition);
         sql.append(" order by r.date desc");
@@ -181,10 +179,33 @@ public class DBUtil
         return jdbc.update(sql.toString());
     }
 
-    public void getLatestFilePathToNamePair()
+    /**
+     * Insert into filename table if filename not exists
+     */
+    public int getLatestFilePathToNamePair()
     {
-        String sql = "insert into filename(filepath,filename) select distinct filepath,substring_index(filepath,'/',-1) from fileinfo where filepath not in (select filepath from filename)";
-        jdbc.update(sql);
+        String sql = "insert into filename(filepath,filename) select filepath,substring_index(filepath,'/',-1) from fileinfo where filepath not in (select filepath from filename)";
+        return jdbc.update(sql);
+    }
+
+    /**
+     * Update filename table to check whether the file is deleted
+     */
+    public int getUpdatedDeletedFile()
+    {
+        String sql = "update filename set invalid=true where (invalid is null or invalid =false) and filepath in (select filepath from (select filepath,type from (select filepath,type from fileinfo order by revision desc) as t1 group by filepath) as t2 where type='Delete')";
+        return jdbc.update(sql);
+    }
+
+    /**
+     * Update filename table to check whether deleted file are used again
+     * 
+     * @return
+     */
+    public int getUpdatedUnDeletedFile()
+    {
+        String sql = "update filename set invalid=false where invalid=true and filepath not in (select filepath from (select filepath,type from (select filepath,type from fileinfo order by revision desc) as t1 group by filepath) as t2 where type='Delete')";
+        return jdbc.update(sql);
     }
 
 }

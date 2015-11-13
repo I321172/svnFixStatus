@@ -35,7 +35,7 @@ function createHttpRequest() {
 }
 
 function getHttpRequest() {
-	return httpRequests[index++ % 3];
+	return httpRequests[index++ % 4];
 }
 
 function initHttpRequest() {
@@ -43,6 +43,7 @@ function initHttpRequest() {
 	httpRequests[0] = createHttpRequest();
 	httpRequests[1] = createHttpRequest();
 	httpRequests[2] = createHttpRequest();
+	httpRequests[3] = createHttpRequest();
 }
 
 function fetchRunningJobs(dom) {
@@ -85,11 +86,20 @@ function showJobs(dom, response) {
 	appendJobStatus(dom);
 }
 
-function appendSummary(dom) {
+function appendSummary(content) {
+	var stop = isStop(content);
 	var la = document.createElement("label");
+	la.setAttribute("class", "summ");
 	la.innerHTML = "Total Count = " + resp.totalCount + " ; List Count = "
-			+ resp.actualCount;
-	dom.appendChild(la);
+			+ resp.actualCount + " ; Click below link to "
+			+ (stop ? "stop" : "start") + " the job";
+	content.appendChild(la);
+}
+
+function isStop(content) {
+	var id = content.parentNode.getAttribute("id");
+	return id.indexOf("Start") > 0 || id.indexOf("Initializing") > 0
+			|| id.indexOf("Progress") > 0;
 }
 
 function appendJobStatus(dom) {
@@ -140,9 +150,9 @@ function changeHref(dom) {
 	var type = dom.getAttribute("class");
 	if (type.indexOf("Started") > 0 || type.indexOf("Initializing") > 0
 			|| type.indexOf("Progress") > 0) {
-
+		// here need a ajax to stop or start the job
 	}
-	dom.setAttribute("href", "http://www.baidu.com");
+	dom.setAttribute("href", "/show/aep");
 }
 
 function removeAllChild(dom) {
@@ -177,6 +187,7 @@ window.onload = function() {
 	clickElement("Started");
 	clickElement("Initializing");
 	clickElement("In Progress");
+	clickElement("Completed");
 }
 
 function clickElement(id) {
