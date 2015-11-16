@@ -91,8 +91,8 @@ function appendSummary(content) {
 	var la = document.createElement("label");
 	la.setAttribute("class", "summ");
 	la.innerHTML = "Total Count = " + resp.totalCount + " ; List Count = "
-			+ resp.actualCount + " ; Click below link to "
-			+ (stop ? "stop" : "start") + " the job";
+			+ resp.actualCount + " ; Click below link to <b>"
+			+ (stop ? "Stop" : "Start") + " The Job!</b>";
 	content.appendChild(la);
 }
 
@@ -172,13 +172,16 @@ function convertUrl(dom) {
 }
 
 function loading(dom, isShow) {
-	var loading = document.getElementById("loading");
 	if (isShow) {
-		dom.appendChild(loading);
-		loading.removeAttribute("hidden");
+		var loading = document.getElementById("loading");
+		var ele = loading.cloneNode(true);
+		ele.removeAttribute("id");
+		ele.removeAttribute("hidden");
+		ele.setAttribute("class", "loading");
+		dom.appendChild(ele);
 	} else {
-		loading.setAttribute("hidden", true);
-		document.body.appendChild(loading);
+		var loading = dom.getElementsByClassName("loading")[0];
+		dom.removeChild(loading);
 	}
 }
 

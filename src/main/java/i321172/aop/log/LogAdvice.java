@@ -57,11 +57,11 @@ public class LogAdvice
     @Around(value = "i321172.aop.log.LogPointCut.logHttpDuration()")
     public Object logHttpDuration(ProceedingJoinPoint pjp) throws Throwable
     {
-        httpCount++;
-        log("Start to fetch Http Info:" + httpCount + "- " + pjp.getArgs()[0]);
+        int count = httpCount++;
+        log("Start to fetch Http Info:" + count + "- " + pjp.getArgs()[0]);
         long start = getTime();
         Object result = pjp.proceed();
-        log("HTTP Operation: " + httpCount + "- Success which takes " + getDuration(start) + " on method ["
+        log("HTTP Operation: " + count + "- Success which takes " + getDuration(start) + " on method ["
                 + pjp.getSignature().toShortString() + "]");
         return result;
     }
