@@ -2,6 +2,7 @@ package i321172.web;
 
 import i321172.MyContext;
 import i321172.bean.EnvEnum;
+import i321172.bean.HttpClientBean;
 import i321172.utils.AEPUtil;
 import i321172.utils.HttpClientUtil;
 import i321172.utils.dao.DBUtil;
@@ -36,7 +37,8 @@ public class ScheduledTasks
             info = null;
             try
             {
-                info = httpUtil.fetchWebResponse(elem.toVersionUrl(), elem.isNeedProxy());
+                info = httpUtil.fetchWebResponse(new HttpClientBean.Builder(elem.toVersionUrl()).setCustomProxy(
+                        elem.getProxy()).build());
             } catch (Exception e)
             {
                 logger.info("Fetch Envirionment:" + elem.toString() + " fail by " + e.getClass()

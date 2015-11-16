@@ -1,5 +1,7 @@
 package i321172.bean;
 
+import i321172.utils.StringUtil;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -143,8 +145,17 @@ public class HttpClientBean
             {
                 if (customProxy != null)
                 {
-                    requestConfig = RequestConfig.custom().setProxy(new HttpHost(customProxy)).build();
                     log("Set custom proxy to httpclient in SAP network: " + customProxy);
+                    String[] proxy = new String[2];
+                    if (customProxy.matches(".+?:\\w+"))
+                    {
+                        proxy = customProxy.split(":");
+                    } else
+                    {
+                        logger.error("Custom Proxy error format!");
+                    }
+                    requestConfig = RequestConfig.custom().setProxy(new HttpHost(proxy[0], Integer.parseInt(proxy[1])))
+                            .build();
                 } else
                 {
                     // set system proxy
@@ -195,7 +206,10 @@ public class HttpClientBean
         public Builder setCustomProxy(String customProxy)
         {
             this.customProxy = customProxy;
-            setProxy(true);
+            if (StringUtil.isNull(customProxy))
+                setProxy(false);
+            else
+                setProxy(true);
             return this;
         }
 

@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class HttpClientUtil
 {
-    private Logger logger = Logger.getLogger(getClass());
+    private static Logger logger = Logger.getLogger(HttpClientUtil.class);
 
     /**
      * @param url
