@@ -58,10 +58,10 @@ public class LogAdvice
     public Object logHttpDuration(ProceedingJoinPoint pjp) throws Throwable
     {
         int count = httpCount++;
-        log("Start to fetch Http Info:" + count + "- " + pjp.getArgs()[0]);
+        log("Start to fetch Http Info:" + count + " - " + pjp.getArgs()[0]);
         long start = getTime();
         Object result = pjp.proceed();
-        log("HTTP Operation: " + count + "- Success which takes " + getDuration(start) + " on method ["
+        log("HTTP Operation: " + count + " - Success which takes " + getDuration(start) + " on method ["
                 + pjp.getSignature().toShortString() + "]");
         return result;
     }
