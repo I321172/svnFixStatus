@@ -43,7 +43,7 @@
 				<table th:class="${envInfo.fixStatus}">
 					<tr>
 						<th colspan="5"
-							th:text="'Environment: '+${envInfo.env}+' --- '">Environment:
+							th:text="'Environment: '+${envInfo.env}+' --- '+${envInfo.env.toBuildVersion()}">Environment:
 							qaautocand</th>
 					</tr>
 					<tr>
