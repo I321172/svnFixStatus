@@ -180,6 +180,7 @@ public class RequestController
                 if (svnInfo.isValuable())
                 {
                     cache.putStoredRevision(version, svnInfo);
+                    MyContext.getBean(DBUtil.class).insertIntoFixCheckIn(version);
                 }
             } catch (Exception e)
             {
@@ -188,6 +189,7 @@ public class RequestController
         } else
         {
             svnUtil.handleSvnEnvComparison(svnInfo);
+            MyContext.getBean(DBUtil.class).insertIntoFixCheckIn(version);
             log("Get cached SVN Info; Revision: " + version);
         }
         return svnInfo;

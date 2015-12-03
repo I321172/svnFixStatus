@@ -2,6 +2,7 @@ package i321172.utils.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +54,11 @@ public class DBUtil
         }
     }
 
+    public int update(String sql)
+    {
+        return jdbc.update(sql);
+    }
+
     public void storeToDB(List<SVNFileBean> svnFiles)
     {
         for (SVNFileBean svnFile : svnFiles)
@@ -68,6 +74,12 @@ public class DBUtil
     {
         String sql = getRevisionInsertSql(revision, author, date, comment);
         execute(sql);
+    }
+
+    public void insertIntoFixCheckIn(long revision)
+    {
+        String sql = "insert into fixcheckin set revision=" + revision + ",date=sysdate()";
+        update(sql);
     }
 
     public void insertIntoFileInfo(String filePath, long revision, String type, String copyPath)

@@ -1,5 +1,7 @@
 package i321172.bean;
 
+import i321172.utils.StringUtil;
+
 public enum EnvEnum
 {
     QAAUTOCAND("https://qaautocand.sflab.ondemand.com/sf-version.properties", "proxy.wdf.sap.corp:8080"), QAAUTOCANDTOMCAT(
@@ -21,11 +23,13 @@ public enum EnvEnum
         needProxy = true;
     }
 
-    private boolean needProxy;
-    private String  customProxy;
+    private final static String DEFAULT_VERSION = "*****";
 
-    private String  versionUrl;
-    private String  versionInfo;
+    private boolean             needProxy;
+    private String              customProxy;
+    private String              versionUrl;
+    private String              versionInfo;
+    private String              buildVersion    = DEFAULT_VERSION;
 
     public String toVersionUrl()
     {
@@ -49,6 +53,11 @@ public enum EnvEnum
         return null;
     }
 
+    public String toBuildVersion()
+    {
+        return "Build Version: " + buildVersion;
+    }
+
     private String getDefaultProxy()
     {
         return "proxy:8080";
@@ -62,5 +71,14 @@ public enum EnvEnum
     public void setVersionInfo(String versionInfo)
     {
         this.versionInfo = versionInfo;
+        setBuildVersion(StringUtil.getMatchString(versionInfo, "(?<=sf-packages\\.version\\=).*\\d+"));
+    }
+
+    public void setBuildVersion(String buildVersion)
+    {
+        if (buildVersion != null)
+            this.buildVersion = buildVersion;
+        else
+            this.buildVersion = DEFAULT_VERSION;
     }
 }

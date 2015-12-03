@@ -5,6 +5,7 @@ import i321172.bean.EnvEnum;
 import i321172.bean.SvnEnvComparison;
 import i321172.bean.SvnInfoBean;
 import i321172.bean.SvnEnvComparison.EnvActualInfo;
+import i321172.utils.StringUtil;
 import i321172.utils.dao.DBUtil;
 
 import java.util.Collection;
@@ -164,28 +165,12 @@ public class SVNUtil
     private String getMatchedRevision(String feature, String source)
     {
         String pattern = "(?<=" + feature + "\\.scm\\.version\\=).*\\d";
-        return getMatchString(source, pattern);
+        return StringUtil.getMatchString(source, pattern);
     }
 
     private void log(String msg)
     {
         logger.info(msg);
-    }
-
-    private String getMatchString(String source, String pattern)
-    {
-        if (source != null)
-        {
-            Pattern pat = Pattern.compile(pattern);
-            Matcher matcher = pat.matcher(source);
-
-            if (matcher.find())
-            {
-                return source.substring(matcher.start(), matcher.end());
-            }
-        }
-
-        return null;
     }
 
 }
