@@ -3,6 +3,7 @@
 <head>
 <title>Check SVN Revision Fix Status</title>
 <link rel="stylesheet" href="/css/svn.css" th:href="@{/css/svn.css}" />
+<script th:src="@{/js/svnfix.js}"></script>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
@@ -24,7 +25,10 @@
 				Missing LocalizedLabelParameter set.</td>
 		</tr>
 	</table>
-
+	<a href="#" id="refreshenv"
+		title="Each Environment Info is refreshed every 3 hours. Click this to refresh it immediately if the new build is just deployed!">Refresh
+		Environment</a>
+	<label id="refreshmsg"></label>
 	<p class="bg">Check In Details</p>
 	<table th:each="comp:${svnInfo.svnEnvComparison}" border="1">
 		<tr>

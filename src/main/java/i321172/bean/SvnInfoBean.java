@@ -102,7 +102,7 @@ public class SvnInfoBean
         {
             for (EnvActualInfo envInfo : comp.getEnvInfo())
             {
-                if (!envInfo.getFixStatus().equals("NONE"))
+                if (!envInfo.getFixStatus().equals("NotKnown"))
                 {
                     this.valuable = true;
                     return;

@@ -38,4 +38,11 @@ public class RestfulController
         util.releaseConnectionPool();
         return "Connection All Closed! Connection Pool Refreshed!";
     }
+
+    @RequestMapping(value = "/refresh/env")
+    private String refreshTask()
+    {
+        MyContext.getBean(ScheduledTasks.class).refreshEnvSFVersion();
+        return "Finish Refresh Environment";
+    }
 }

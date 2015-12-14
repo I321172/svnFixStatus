@@ -29,7 +29,7 @@ public class LogEntryHandlerDBMapping implements ISVNLogEntryHandler
             for (String key : map.keySet())
             {
                 SVNLogEntryPath entry = map.get(key);
-                if (key.matches(".*.java"))
+                if (key.matches(".*.java") || key.endsWith(".js") || key.endsWith(".css"))
                 {
                     getDBUtil().insertIntoFileInfo(entry.getPath(), logEntry.getRevision(), getType(entry.getType()),
                             entry.getCopyPath());

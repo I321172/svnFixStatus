@@ -11,9 +11,6 @@ import i321172.utils.dao.DBUtil;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import javax.annotation.Resource;
 
 import org.apache.log4j.Logger;

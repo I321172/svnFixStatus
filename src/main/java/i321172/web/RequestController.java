@@ -124,16 +124,6 @@ public class RequestController
         return "aepdef";
     }
 
-    @RequestMapping(value = "/refresh/task")
-    public String refreshTask(Model model) throws Exception
-    {
-        String msg = null;
-        refreshTask();
-        msg = "Schedule Task Triggered Success! ";
-        model.addAttribute("result", msg);
-        return "result";
-    }
-
     @RequestMapping(value = "/show/compile")
     public String fetchCompileError(@RequestParam(value = "url") String url, Model model) throws Exception
     {

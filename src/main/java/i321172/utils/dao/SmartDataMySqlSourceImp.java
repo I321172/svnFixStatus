@@ -2,6 +2,7 @@ package i321172.utils.dao;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,7 +16,7 @@ public class SmartDataMySqlSourceImp extends MysqlDataSource implements SmartDat
     private Logger           logger   = Logger.getLogger(SmartDataMySqlSourceImp.class);
     private int              point    = 0;
     private int              count    = 0;
-    private int              maxCount = 500;
+    private int              maxCount = 475;
     Map<Integer, Connection> conns    = new HashMap<Integer, Connection>();
 
     public Connection getConnection() throws SQLException
@@ -37,8 +38,9 @@ public class SmartDataMySqlSourceImp extends MysqlDataSource implements SmartDat
         logger.debug(msg);
     }
 
-    public void closeAllConnectoins()
+    public void closeAllConnections()
     {
+        logger.info("Close All Connections! Count = " + count);
         for (int i : conns.keySet())
         {
             try
@@ -59,6 +61,18 @@ public class SmartDataMySqlSourceImp extends MysqlDataSource implements SmartDat
 
     private static final long serialVersionUID = 1L;
 
+    public int getMaxCount()
+    {
+        return maxCount;
+    }
+
+    @Override
+    public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException
     {
@@ -78,11 +92,6 @@ public class SmartDataMySqlSourceImp extends MysqlDataSource implements SmartDat
     {
         // TODO Auto-generated method stub
         return false;
-    }
-
-    public int getMaxCount()
-    {
-        return maxCount;
     }
 
 }

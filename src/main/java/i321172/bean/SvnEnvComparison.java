@@ -62,7 +62,7 @@ public class SvnEnvComparison
         private EnvEnum env;
         private long    envRevision;
         private boolean fix;
-        private String  fixStatus = "NONE";
+        private String  fixStatus = "NotKnown";
 
         public EnvActualInfo()
         {

@@ -152,7 +152,7 @@ public class HttpClientBean
                         proxy = customProxy.split(":");
                     } else
                     {
-                        logger.error("Custom Proxy error format!");
+                        logger.error("Custom Proxy error format! " + customProxy);
                     }
                     requestConfig = RequestConfig.custom().setProxy(new HttpHost(proxy[0], Integer.parseInt(proxy[1])))
                             .build();

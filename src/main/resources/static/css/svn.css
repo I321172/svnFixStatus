@@ -20,7 +20,7 @@ table.GotFixed a, table.NotFixed a {
 	color: white;
 }
 
-table.NONE a {
+table.NotKnown a {
 	color: black;
 }
 
@@ -29,7 +29,11 @@ table.NotFixed {
 	color: white;
 }
 
-table.NONE {
+table.NotKnown {
 	background-color: yellow;
 }
 
+#refreshmsg {
+	color: red;
+	margin-left: 10px;
+}

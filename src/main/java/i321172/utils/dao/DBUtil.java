@@ -1,14 +1,13 @@
 package i321172.utils.dao;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 import i321172.MyContext;
 import i321172.bean.Entry;
 import i321172.bean.SVNFileBean;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -28,7 +27,7 @@ public class DBUtil
     public void releaseConnectionPool()
     {
         SmartDataMySqlSourceImp dataSource = MyContext.getBean(SmartDataMySqlSourceImp.class);
-        dataSource.closeAllConnectoins();
+        dataSource.closeAllConnections();
     }
 
     public long getNearestRevision(String begin)
