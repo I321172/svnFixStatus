@@ -29,13 +29,26 @@ public class LogEntryHandlerDBMapping implements ISVNLogEntryHandler
             for (String key : map.keySet())
             {
                 SVNLogEntryPath entry = map.get(key);
-                if (key.matches(".*.java") || key.endsWith(".js") || key.endsWith(".css"))
+                if (isNeedStore(key))
                 {
                     getDBUtil().insertIntoFileInfo(entry.getPath(), logEntry.getRevision(), getType(entry.getType()),
                             entry.getCopyPath());
                 }
             }
         }
+    }
+
+    private boolean isNeedStore(String fileName)
+    {
+        String[] suffix = { ".java", ".js", ".css", ".xml" };
+        for (String str : suffix)
+        {
+            if (fileName.endsWith(str))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public DBUtil getDBUtil()
