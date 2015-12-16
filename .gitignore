@@ -9,3 +9,4 @@ gradlew.bat
 .git
 applog
 javaw*
+app.properties
